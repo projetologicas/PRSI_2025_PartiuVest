@@ -1,0 +1,82 @@
+package br.edu.ifsp.partiu_vest.model;
+
+import jakarta.persistence.*;
+
+import java.util.Date;
+
+@Entity
+@Table(name = "Comment")
+public class Comment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "id")
+    private Question question;
+    @ManyToOne
+    @JoinColumn(name = "id")
+    private User user;
+
+    @Column
+    private String comment;
+    @Column
+    private Date date;
+    @Column
+    private int likes;
+
+    public Comment(Question question, User user, String comment, Date date, int likes) {
+        this.question = question;
+        this.user = user;
+        this.comment = comment;
+        this.date = date;
+        this.likes = likes;
+    }
+
+    public Comment() {
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+}
