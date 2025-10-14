@@ -16,9 +16,9 @@ public class QuestionBook {
     @Column
     private Date creation_date;
 
-    public QuestionBook(User user_id, Date creation_date) {
-        this.user_id = user_id;
-        this.creation_date = creation_date;
+    public QuestionBook(User user_id) {
+        setUser_id(user_id);
+        setCreation_date();
     }
 
     public QuestionBook() {
@@ -41,7 +41,7 @@ public class QuestionBook {
         return creation_date;
     }
 
-    public void setCreation_date(Date creation_date) {
-        this.creation_date = creation_date;
+    public void setCreation_date() {
+        this.creation_date = new Date();
     }
 }

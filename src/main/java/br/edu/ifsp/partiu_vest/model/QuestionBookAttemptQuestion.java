@@ -21,9 +21,9 @@ public class QuestionBookAttemptQuestion {
     private Date date;
 
     public QuestionBookAttemptQuestion(Attempt question_book_attempt, Character user_answer, Date date) {
-        this.question_book_attempt = question_book_attempt;
-        this.user_answer = user_answer;
-        this.date = date;
+        setQuestion_book_attempt(question_book_attempt);
+        setUser_answer(user_answer);
+        setDate();
     }
 
     public QuestionBookAttemptQuestion() {
@@ -54,7 +54,7 @@ public class QuestionBookAttemptQuestion {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        this.date = new Date();
     }
 }

@@ -23,13 +23,13 @@ public class Question {
     @Column
     private Model model;
 
-    public Question(String title, String image_url, int number, Date sign_date, Character answer, Model model) {
-        this.title = title;
-        this.image_url = image_url;
-        this.number = number;
-        this.sign_date = sign_date;
-        this.answer = answer;
-        this.model = model;
+    public Question(String title, String image_url, int number, Character answer, Model model) {
+        setTitle(title);
+        setImage_url(image_url);
+        setNumber(number);
+        setSign_date();
+        setAnswer(answer);
+        setModel(model);
     }
 
     public Question() {
@@ -68,8 +68,8 @@ public class Question {
         return sign_date;
     }
 
-    public void setSign_date(Date sign_date) {
-        this.sign_date = sign_date;
+    public void setSign_date() {
+        this.sign_date = new Date();
     }
 
     public Character getAnswer() {

@@ -1,5 +1,7 @@
 package br.edu.ifsp.partiu_vest.model;
 
 public enum ItemType {
-    BACKGROUND
+    BACKGROUND,
+    ICON,
+    BORDER
 }

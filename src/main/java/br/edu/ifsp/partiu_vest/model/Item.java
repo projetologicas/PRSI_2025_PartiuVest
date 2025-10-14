@@ -18,10 +18,10 @@ public class Item {
     private int price;
 
     public Item(String name, String image_url, ItemType type, int price) {
-        this.name = name;
-        this.image_url = image_url;
-        this.type = type;
-        this.price = price;
+        setName(name);
+        setImage_url(image_url);
+        setType(type);
+        setPrice(price);
     }
 
     public Item() {

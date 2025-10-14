@@ -15,8 +15,8 @@ public class QuestionQuestionBook {
     private QuestionBook question_book;
 
     public QuestionQuestionBook(Question question, QuestionBook question_book) {
-        this.question = question;
-        this.question_book = question_book;
+        setQuestion(question);
+        setQuestion_book(question_book);
     }
 
     public QuestionQuestionBook() {
