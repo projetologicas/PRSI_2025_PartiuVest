@@ -1,4 +1,4 @@
-package br.edu.ifsp.partiu_vest.model;
+package br.edu.ifsp.partiu_vest.model.enums;
 
 public enum Model {
     ENEM,

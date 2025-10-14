@@ -2,6 +2,8 @@ package br.edu.ifsp.partiu_vest.model;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "user_item")
 public class UserItem {
@@ -14,6 +16,9 @@ public class UserItem {
     @JoinColumn(name = "id")
     private User user;
 
+    @Column
+    private Date date;
+
     public UserItem(Item class_, User user) {
         this.class_ = class_;
         this.user = user;
@@ -21,6 +26,17 @@ public class UserItem {
 
     public UserItem() {
 
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    public void setDate() {
+        this.date = new Date();
     }
 
     public Item getClass_() {

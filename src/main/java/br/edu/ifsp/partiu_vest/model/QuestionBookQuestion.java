@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "question_question_book")
-public class QuestionQuestionBook {
+public class QuestionBookQuestion {
     @Id
     @ManyToOne
     @JoinColumn(name = "id")
@@ -14,12 +14,12 @@ public class QuestionQuestionBook {
     @JoinColumn(name = "id")
     private QuestionBook question_book;
 
-    public QuestionQuestionBook(Question question, QuestionBook question_book) {
-        this.question = question;
-        this.question_book = question_book;
+    public QuestionBookQuestion(Question question, QuestionBook question_book) {
+        setQuestion(question);
+        setQuestion_book(question_book);
     }
 
-    public QuestionQuestionBook() {
+    public QuestionBookQuestion() {
 
     }
 

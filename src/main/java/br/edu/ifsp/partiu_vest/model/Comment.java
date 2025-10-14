@@ -21,15 +21,12 @@ public class Comment {
     private String comment;
     @Column
     private Date date;
-    @Column
-    private int likes;
 
-    public Comment(Question question, User user, String comment, Date date, int likes) {
-        this.question = question;
-        this.user = user;
-        this.comment = comment;
-        this.date = date;
-        this.likes = likes;
+    public Comment(Question question, User user, String comment) {
+        setQuestion(question);
+        setUser(user);
+        setComment(comment);
+        setDate();
     }
 
     public Comment() {
@@ -68,15 +65,7 @@ public class Comment {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
+    public void setDate() {
+        this.date = new Date();
     }
 }
