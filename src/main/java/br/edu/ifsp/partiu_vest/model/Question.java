@@ -1,5 +1,7 @@
 package br.edu.ifsp.partiu_vest.model;
 
+import br.edu.ifsp.partiu_vest.model.enums.Area;
+import br.edu.ifsp.partiu_vest.model.enums.Model;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -17,19 +19,16 @@ public class Question {
     @Column
     private int number;
     @Column
-    private Date sign_date;
-    @Column
     private Character answer;
     @Column
-    private Model model;
+    private Area area;
 
-    public Question(String title, String image_url, int number, Character answer, Model model) {
+    public Question(String title, String image_url, int number, Character answer, Area area) {
         setTitle(title);
         setImage_url(image_url);
         setNumber(number);
-        setSign_date();
         setAnswer(answer);
-        setModel(model);
+        setArea(area);
     }
 
     public Question() {
@@ -38,6 +37,14 @@ public class Question {
 
     public Long getId() {
         return id;
+    }
+
+    public Area getArea() {
+        return area;
+    }
+
+    public void setArea(Area area) {
+        this.area = area;
     }
 
     public String getTitle() {
@@ -64,27 +71,11 @@ public class Question {
         this.number = number;
     }
 
-    public Date getSign_date() {
-        return sign_date;
-    }
-
-    public void setSign_date() {
-        this.sign_date = new Date();
-    }
-
     public Character getAnswer() {
         return answer;
     }
 
     public void setAnswer(Character answer) {
         this.answer = answer;
-    }
-
-    public Model getModel() {
-        return model;
-    }
-
-    public void setModel(Model model) {
-        this.model = model;
     }
 }

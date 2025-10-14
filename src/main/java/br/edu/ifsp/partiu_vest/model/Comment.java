@@ -21,15 +21,12 @@ public class Comment {
     private String comment;
     @Column
     private Date date;
-    @Column
-    private int likes;
 
     public Comment(Question question, User user, String comment) {
         setQuestion(question);
         setUser(user);
         setComment(comment);
         setDate();
-        setLikes();
     }
 
     public Comment() {
@@ -70,17 +67,5 @@ public class Comment {
 
     public void setDate() {
         this.date = new Date();
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes() {
-        this.likes = 0;
-    }
-
-    public void darLike(){
-        this.likes += 1;
     }
 }

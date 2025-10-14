@@ -1,5 +1,6 @@
 package br.edu.ifsp.partiu_vest.model;
 
+import br.edu.ifsp.partiu_vest.model.enums.Model;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -10,15 +11,16 @@ public class QuestionBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private User user_id;
     @Column
     private Date creation_date;
+    @Column
+    private Model model;
+    @Column boolean r_generated;
 
-    public QuestionBook(User user_id) {
-        setUser_id(user_id);
+    public QuestionBook(User user_id, Model model, boolean r_generated) {
         setCreation_date();
+        setModel(model);
+        setR_generated(r_generated);
     }
 
     public QuestionBook() {
@@ -29,16 +31,28 @@ public class QuestionBook {
         return id;
     }
 
-    public User getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(User user_id) {
-        this.user_id = user_id;
-    }
-
     public Date getCreation_date() {
         return creation_date;
+    }
+
+    public void setCreation_date(Date creation_date) {
+        this.creation_date = creation_date;
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
+    public boolean isR_generated() {
+        return r_generated;
+    }
+
+    public void setR_generated(boolean r_generated) {
+        this.r_generated = r_generated;
     }
 
     public void setCreation_date() {

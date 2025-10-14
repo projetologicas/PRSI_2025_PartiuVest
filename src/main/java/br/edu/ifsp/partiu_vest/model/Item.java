@@ -1,5 +1,6 @@
 package br.edu.ifsp.partiu_vest.model;
 
+import br.edu.ifsp.partiu_vest.model.enums.ItemType;
 import jakarta.persistence.*;
 
 @Entity
