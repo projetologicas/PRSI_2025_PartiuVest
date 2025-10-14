@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "question_book_attempt")
-public class QuestionBookAttempt {
+public class Attempt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,14 +22,14 @@ public class QuestionBookAttempt {
     @Column
     private Date end_date;
 
-    public QuestionBookAttempt(QuestionBook question_book, User user, Date start_date, Date end_date) {
+    public Attempt(QuestionBook question_book, User user, Date start_date, Date end_date) {
         this.question_book = question_book;
         this.user = user;
         this.start_date = start_date;
         this.end_date = end_date;
     }
 
-    public QuestionBookAttempt() {
+    public Attempt() {
 
     }
 

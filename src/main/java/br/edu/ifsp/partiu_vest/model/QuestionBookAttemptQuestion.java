@@ -13,14 +13,14 @@ public class QuestionBookAttemptQuestion {
 
     @ManyToOne
     @JoinColumn(name = "id")
-    private QuestionBookAttempt question_book_attempt;
+    private Attempt question_book_attempt;
 
     @Column
     private Character user_answer;
     @Column
     private Date date;
 
-    public QuestionBookAttemptQuestion(QuestionBookAttempt question_book_attempt, Character user_answer, Date date) {
+    public QuestionBookAttemptQuestion(Attempt question_book_attempt, Character user_answer, Date date) {
         this.question_book_attempt = question_book_attempt;
         this.user_answer = user_answer;
         this.date = date;
@@ -34,11 +34,11 @@ public class QuestionBookAttemptQuestion {
         return id;
     }
 
-    public QuestionBookAttempt getQuestion_book_attempt() {
+    public Attempt getQuestion_book_attempt() {
         return question_book_attempt;
     }
 
-    public void setQuestion_book_attempt(QuestionBookAttempt question_book_attempt) {
+    public void setQuestion_book_attempt(Attempt question_book_attempt) {
         this.question_book_attempt = question_book_attempt;
     }
 
