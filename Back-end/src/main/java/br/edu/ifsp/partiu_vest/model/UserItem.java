@@ -10,7 +10,7 @@ public class UserItem {
     @Id
     @ManyToOne
     @JoinColumn(name = "id")
-    private Item class_;
+    private Item item;
     @Id
     @ManyToOne
     @JoinColumn(name = "id")
@@ -19,8 +19,8 @@ public class UserItem {
     @Column
     private Date date;
 
-    public UserItem(Item class_, User user) {
-        this.class_ = class_;
+    public UserItem(Item item, User user) {
+        this.item = item;
         this.user = user;
     }
 
@@ -39,12 +39,12 @@ public class UserItem {
         this.date = new Date();
     }
 
-    public Item getClass_() {
-        return class_;
+    public Item getItem() {
+        return item;
     }
 
-    public void setClass_(Item class_) {
-        this.class_ = class_;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public User getUser() {
