@@ -5,6 +5,7 @@ import br.edu.ifsp.partiu_vest.model.enums.Model;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "question")
@@ -22,6 +23,12 @@ public class Question {
     private Character answer;
     @Column
     private Area area;
+
+    @ManyToMany(mappedBy = "questions")
+    private Set<Attempt> attempts;
+
+    @ManyToMany(mappedBy = "questions")
+    private Set<QuestionBook> question_books;
 
     public Question(String title, String image_url, int number, Character answer, Area area) {
         setTitle(title);
