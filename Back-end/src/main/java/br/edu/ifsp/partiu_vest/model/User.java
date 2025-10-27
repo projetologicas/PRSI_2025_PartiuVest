@@ -1,9 +1,11 @@
 package br.edu.ifsp.partiu_vest.model;
 
+import br.edu.ifsp.partiu_vest.model.enums.Role;
 import jakarta.persistence.*;
 
 import java.security.MessageDigest;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -11,30 +13,40 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique=true)
+    @Column(nullable = false, length = 120, unique=true)
     private String email;
-    @Column
+    @Column(nullable = false, length = 120)
     private String password;
-    @Column
+    @Column(nullable = false, length = 120)
     private String name;
-    @Column
+    @Column(nullable = false)
     private Date sign_date;
-    @Column
+    @Column(nullable = false)
     private int streak;
-    @Column
+    @Column(nullable = false)
     private int points;
-    @Column
+    @Column(nullable = false)
     private int xp;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
+    @Column(nullable = false)
+    private Boolean enabled;
+
+    @ManyToMany
+    @JoinTable(name = "item",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id"))
+    private Set<Item> items;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<Attempt> attempts;
 
     public User(){}
 
-    public User(String email, String password, String name,Boolean newUser){
+    public User(String email, String password, String name){
         setEmail(email);
-        if(newUser){
-            setPassword(sha256(password));
-        } else{
-            setPassword(password);
-        }
+        setPassword(password);
         setName(name);
         setSign_date();
         setPoints(0);
@@ -50,16 +62,24 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) throws RuntimeException{
-        String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com$";
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-        try {
-            if (email.contains(regex)){
-                this.email = email;
-            }
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getPassword() {
@@ -121,38 +141,6 @@ public class User {
             this.xp = 0;
         }
     }
-
-    //Criptografia da senha do usuario
-    private static String sha256(String senha) {
-        try {
-            var digest = MessageDigest.getInstance("SHA-256");
-            byte[] bytes = digest.digest(senha.getBytes());
-
-            var string_builder = new StringBuilder();
-            for (byte b : bytes) {
-                String h = Integer.toHexString(0xff & b);
-                if (h.length() == 1) {
-                    string_builder.append('0');
-                }
-                string_builder.append(h);
-            }
-            return string_builder.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    //Verifica as informações se a senha e o email estão corretas
-    public Boolean verify(String password, String email) {
-        if (sha256(password).equals(this.password) && email.equals(this.email)) {
-            return true;
-        }
-        return false;
-    }
-
-    //Caso o usuario errar uma questão, o Streak dele é resetado.
     private void resetStreak(){
         this.streak = 0;
     }

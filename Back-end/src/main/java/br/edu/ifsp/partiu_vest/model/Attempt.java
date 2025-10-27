@@ -3,19 +3,26 @@ package br.edu.ifsp.partiu_vest.model;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
-@Table(name = "question_book_attempt")
+@Table(name = "attempt")
 public class Attempt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "question_book_id")
     private QuestionBook question_book;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToMany
+    @JoinTable(name = "question",
+            joinColumns = @JoinColumn(name = "attempt_id"),
+            inverseJoinColumns = @JoinColumn(name = "question_id"))
+    private Set<Question> questions;
 
     @Column
     private Date start_date;

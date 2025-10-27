@@ -3,6 +3,8 @@ package br.edu.ifsp.partiu_vest.model;
 import br.edu.ifsp.partiu_vest.model.enums.ItemType;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "item")
 public class Item {
@@ -17,6 +19,9 @@ public class Item {
     private ItemType type;
     @Column
     private int price;
+
+    @ManyToMany(mappedBy = "items")
+    private Set<User> users;
 
     public Item(String name, String image_url, ItemType type, int price) {
         setName(name);
