@@ -19,7 +19,7 @@ public class Attempt {
     private User user;
 
     @ManyToMany
-    @JoinTable(name = "question",
+    @JoinTable(name = "attempt_question",
             joinColumns = @JoinColumn(name = "attempt_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id"))
     private Set<Question> questions;

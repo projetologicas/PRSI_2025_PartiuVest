@@ -1,9 +1,7 @@
 package br.edu.ifsp.partiu_vest.model;
 
-import br.edu.ifsp.partiu_vest.model.enums.Model;
 import jakarta.persistence.*;
 
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -12,32 +10,31 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String title;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String image_desc;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String enum_a;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String enum_b;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String enum_c;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String enum_d;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String enum_e;
     @Column
     private int number;
     @Column
-    private Character answer;
-    @Column
+    private String answer;
     @ManyToMany(mappedBy = "questions")
     private Set<Attempt> attempts;
+    @ManyToOne
+    @JoinColumn(name = "question_book_id", nullable = false)
+    private QuestionBook questionBook;
 
-    @ManyToMany(mappedBy = "questions")
-    private Set<QuestionBook> question_books;
-
-    public Question(String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, int number, Character answer) {
+    public Question(String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, int number, String answer) {
         setTitle(title);
         setImage_desc(image_desc);
         setNumber(number);
@@ -57,7 +54,16 @@ public class Question {
 
     }
 
-    public Question(String id, Integer number, String question, String descImg, String enunA, String enunB, String enunC, String enunD, String enunE, String label) {
+    public Question(Integer number, String question, String descImg, String enunA, String enunB, String enunC, String enunD, String enunE, String label) {
+        setNumber(number);
+        setTitle(question);
+        setImage_desc(descImg);
+        setEnum_a(enunA);
+        setEnum_b(enunB);
+        setEnum_c(enunC);
+        setEnum_d(enunD);
+        setEnum_e(enunE);
+        setAnswer(label);
     }
     public Long getId() {
         return id;
@@ -84,11 +90,11 @@ public class Question {
         this.number = number;
     }
 
-    public Character getAnswer() {
+    public String getAnswer() {
         return answer;
     }
 
-    public void setAnswer(Character answer) {
+    public void setAnswer(String answer) {
         this.answer = answer;
     }
 
@@ -130,5 +136,8 @@ public class Question {
 
     public void setEnum_e(String enum_e) {
         this.enum_e = enum_e;
+    }
+    public void setQuestionBook(QuestionBook questionBook) {
+        this.questionBook = questionBook;
     }
 }
