@@ -1,10 +1,8 @@
 package br.edu.ifsp.partiu_vest.model;
 
-import br.edu.ifsp.partiu_vest.model.enums.Model;
 import jakarta.persistence.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -16,24 +14,25 @@ public class QuestionBook {
     @Column
     private Date creation_date;
     @Column
-    private Model model;
+    private String model;
     @Column boolean r_generated;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question_book")
     private Set<Attempt> attempts;
 
-    @ManyToMany
-    @JoinTable(name = "question",
-            joinColumns = @JoinColumn(name = "question_book_id"),
-            inverseJoinColumns = @JoinColumn(name = "question_id"))
+    @OneToMany(mappedBy = "questionBook")
     private Set<Question> questions;
 
-    public QuestionBook(User user_id, Model model, boolean r_generated) {
+    public QuestionBook(User user_id, String model, boolean r_generated) {
         setCreation_date();
         setModel(model);
         setR_generated(r_generated);
     }
-
+    public QuestionBook(String model) {
+        setCreation_date();
+        setModel(model);
+        setR_generated(false);
+    }
     public QuestionBook() {
 
     }
@@ -50,11 +49,11 @@ public class QuestionBook {
         this.creation_date = creation_date;
     }
 
-    public Model getModel() {
+    public String getModel() {
         return model;
     }
 
-    public void setModel(Model model) {
+    public void setModel(String model) {
         this.model = model;
     }
 
