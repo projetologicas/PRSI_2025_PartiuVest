@@ -43,11 +43,23 @@ public class UserService {
         User user = repository.findByEmail(email);
 
         if (user == null) {
-            throw new UserNotFoundException("Usuário não encontrado com e-mail: " + email));
+            throw new UserNotFoundException("Usuário não encontrado com e-mail: " + email);
         }
         if (!encoder.matches(dto.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Credenciais inválidas.");
         }
         return UserResponse.from(user);
     }
+
+    public User checkCredentialsAndReturnUser(AuthRequest dto) {
+        User user = repository.findByEmail(dto.getEmail().toLowerCase());
+        if (user == null) {
+            throw new UserNotFoundException("Usuário não encontrado");
+        }
+        if (!encoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Credenciais inválidas");
+        }
+        return user;
+    }
+
 }
