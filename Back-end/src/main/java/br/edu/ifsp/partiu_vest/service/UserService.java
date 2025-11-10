@@ -3,6 +3,9 @@ package br.edu.ifsp.partiu_vest.service;
 import br.edu.ifsp.partiu_vest.dto.AuthRequest;
 import br.edu.ifsp.partiu_vest.dto.RegisterRequest;
 import br.edu.ifsp.partiu_vest.dto.UserResponse;
+import br.edu.ifsp.partiu_vest.exceptions.EmailAlreadyUsedException;
+import br.edu.ifsp.partiu_vest.exceptions.InvalidCredentialsException;
+import br.edu.ifsp.partiu_vest.exceptions.UserNotFoundException;
 import br.edu.ifsp.partiu_vest.model.User;
 import br.edu.ifsp.partiu_vest.model.enums.Role;
 import br.edu.ifsp.partiu_vest.repository.UserRepository;
@@ -19,8 +22,9 @@ public class UserService {
     }
     public UserResponse register(RegisterRequest dto) {
         if (repository.existsByEmail(dto.getEmail())) {
-            return null;
+            throw new EmailAlreadyUsedException("E-mail já está em uso.");
         }
+
         var user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
@@ -35,11 +39,27 @@ public class UserService {
         return UserResponse.from(saved);
     }
     public UserResponse checkCredentials(AuthRequest dto) {
-        User user = repository.findByEmail(dto.getEmail().toLowerCase());
-        if (user == null) return null;
+        String email = dto.getEmail().toLowerCase();
+        User user = repository.findByEmail(email);
+
+        if (user == null) {
+            throw new UserNotFoundException("Usuário não encontrado com e-mail: " + email);
+        }
         if (!encoder.matches(dto.getPassword(), user.getPassword())) {
-            return null;
+            throw new InvalidCredentialsException("Credenciais inválidas.");
         }
         return UserResponse.from(user);
     }
+
+    public User checkCredentialsAndReturnUser(AuthRequest dto) {
+        User user = repository.findByEmail(dto.getEmail().toLowerCase());
+        if (user == null) {
+            throw new UserNotFoundException("Usuário não encontrado");
+        }
+        if (!encoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Credenciais inválidas");
+        }
+        return user;
+    }
+
 }
