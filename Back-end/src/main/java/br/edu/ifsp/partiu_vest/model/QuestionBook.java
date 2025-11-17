@@ -76,4 +76,7 @@ public class QuestionBook {
     public void setQuestions(Set<Question> questions) {
         this.questions = questions;
     }
+    public Set<Question> getQuestions(){
+        return questions;
+    }
 }
