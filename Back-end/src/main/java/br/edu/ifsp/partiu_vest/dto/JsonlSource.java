@@ -1,6 +1,7 @@
 package br.edu.ifsp.partiu_vest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class JsonlSource {

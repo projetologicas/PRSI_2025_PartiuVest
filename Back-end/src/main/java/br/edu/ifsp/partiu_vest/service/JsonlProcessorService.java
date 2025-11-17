@@ -15,7 +15,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -112,8 +114,9 @@ public class JsonlProcessorService {
                     enunE,
                     source.getLabel());
 
-            newQuestion.setQuestionBook(questionBook);
-
+            Set<QuestionBook> questionBooksSet = new HashSet<>();
+            questionBooksSet.add(questionBook);
+            newQuestion.setQuestionBook(questionBooksSet);
             return newQuestion;
 
         }catch(Exception ex) {

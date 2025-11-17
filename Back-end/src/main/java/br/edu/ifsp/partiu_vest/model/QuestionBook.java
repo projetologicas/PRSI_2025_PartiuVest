@@ -20,7 +20,12 @@ public class QuestionBook {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question_book")
     private Set<Attempt> attempts;
 
-    @OneToMany(mappedBy = "questionBook")
+    @ManyToMany
+    @JoinTable(
+            name = "book_question", // Nome da nova tabela de junção
+            joinColumns = @JoinColumn(name = "question_book_id"),
+            inverseJoinColumns = @JoinColumn(name = "question_id")
+    )
     private Set<Question> questions;
 
     public QuestionBook(User user_id, String model, boolean r_generated) {
@@ -67,5 +72,8 @@ public class QuestionBook {
 
     public void setCreation_date() {
         this.creation_date = new Date();
+    }
+    public void setQuestions(Set<Question> questions) {
+        this.questions = questions;
     }
 }
