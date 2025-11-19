@@ -3,7 +3,6 @@ package br.edu.ifsp.partiu_vest.model;
 import br.edu.ifsp.partiu_vest.model.enums.Role;
 import jakarta.persistence.*;
 
-import java.security.MessageDigest;
 import java.util.Date;
 import java.util.Set;
 
