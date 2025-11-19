@@ -20,6 +20,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
     public String generateToken(User user) {
+        System.out.println("generating toke for user: " + user.getId());
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole().name())

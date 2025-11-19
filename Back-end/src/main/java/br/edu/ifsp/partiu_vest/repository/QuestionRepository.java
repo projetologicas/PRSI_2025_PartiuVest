@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
+
+    public List<Question> findQuestionsByQuestionBookId(long questionBookId);
     @Query(value = "SELECT q.* FROM question q " +
             "JOIN book_question bq ON q.id = bq.question_id " +
             "WHERE q.number = :number AND bq.question_book_id = :bookId LIMIT 1",

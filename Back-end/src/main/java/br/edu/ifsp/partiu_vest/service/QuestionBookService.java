@@ -1,29 +1,41 @@
 package br.edu.ifsp.partiu_vest.service;
 
+import br.edu.ifsp.partiu_vest.dto.QuestionBookRequest;
 import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
 import br.edu.ifsp.partiu_vest.repository.QuestionBookRepository;
 import br.edu.ifsp.partiu_vest.repository.QuestionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import java.util.*;
+
 @Service
 public class QuestionBookService {
-    private final QuestionBookRepository questionBookRepository;
-    private final QuestionRepository questionRepository;
+    private final QuestionBookRepository question_book_repository;
+    private final QuestionRepository question_repository;
 
-    public QuestionBookService(QuestionBookRepository questionBookRepository, QuestionRepository questionRepository) {
-        this.questionBookRepository = questionBookRepository;
-        this.questionRepository = questionRepository;
+    public QuestionBookService(QuestionBookRepository question_book_repository, QuestionRepository question_repository) {
+        this.question_book_repository = question_book_repository;
+        this.question_repository = question_repository;
     }
 
+    public List<Question> getQuestionsFromQuestionBook(QuestionBookRequest dto) {
+        List<Question> question_list = question_repository.findQuestionsByQuestionBookId(dto.getQuestionBookId());
+        return question_list;
+    }
+
+    public QuestionBook getQuestionBook(QuestionBookRequest dto) {
+        Optional<QuestionBook> questionBook = question_book_repository.findById(dto.getQuestionBookId());
+        return questionBook.get();
+    }
     @Transactional
     public QuestionBook createRandomExam(){
-        List<Question> allQuestions = questionRepository.findAll();
+        List<Question> allQuestions = question_repository.findAll();
         final int count = 90;
 
         if(allQuestions.size() < count){
@@ -38,8 +50,9 @@ public class QuestionBookService {
         randomExam.setR_generated(true);
         randomExam.setQuestions(randomQuestions);
 
-        QuestionBook savedExam = questionBookRepository.save(randomExam);
-        questionRepository.saveAll(randomQuestions);
+        QuestionBook savedExam = question_book_repository.save(randomExam);
+        question_repository.saveAll(randomQuestions);
         return savedExam;
     }
 }
+

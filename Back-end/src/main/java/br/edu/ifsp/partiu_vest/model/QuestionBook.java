@@ -73,10 +73,32 @@ public class QuestionBook {
     public void setCreation_date() {
         this.creation_date = new Date();
     }
+
+    public Set<Attempt> getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(Set<Attempt> attempts) {
+        this.attempts = attempts;
+    }
+
+    public Set<Question> getQuestions() {
+        return questions;
+    }
+
     public void setQuestions(Set<Question> questions) {
         this.questions = questions;
     }
-    public Set<Question> getQuestions(){
-        return questions;
+
+    @Override
+    public String toString() {
+        return "QuestionBook{" +
+                "id=" + id +
+                ", creation_date=" + creation_date +
+                ", model='" + model + '\'' +
+                ", r_generated=" + r_generated +
+                ", attempts=" + attempts +
+                ", questions=" + questions +
+                '}';
     }
 }

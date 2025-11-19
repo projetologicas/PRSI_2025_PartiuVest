@@ -79,6 +79,8 @@ public class JsonlProcessorService {
                     question.setQuestionBook(questionBooksSet);
                     questionBook.getQuestions().add(question);
                 }
+                
+                questionBook.setQuestions(new HashSet<>(questions));
 
                 questionRepository.saveAll(questions);
                 questionBookRepository.save(questionBook);
@@ -92,16 +94,17 @@ public class JsonlProcessorService {
     }
 
     private QuestionBook findOrCreateQuestionBook(String name) {
-        return questionBookRepository.findByModel(name)
-                .orElseGet(() -> {
-                    QuestionBook newBook = new QuestionBook();
-                    newBook.setModel(name);
-                    newBook.setCreation_date();
-                    newBook.setR_generated(false);
+        QuestionBook questionBook = questionBookRepository.findByModel(name);
+        if (questionBook == null) {
+            QuestionBook newBook = new QuestionBook();
+            newBook.setModel(name);
+            newBook.setCreation_date();
+            newBook.setR_generated(false);
 
-                    System.out.println("Criando nova QuestionBook: " + name);
-                    return questionBookRepository.save(newBook);
-                });
+            System.out.println("Criando nova QuestionBook: " + name);
+            return questionBookRepository.save(newBook);
+        }
+        return questionBook;
     }
 
     private Optional<JsonlSource> safeReadValue(String line) {

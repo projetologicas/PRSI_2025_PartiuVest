@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface QuestionBookRepository extends JpaRepository<QuestionBook, Long> {
-    Optional<QuestionBook> findByModel(String model);
+    QuestionBook findByModel(String model);
 }
 
 
