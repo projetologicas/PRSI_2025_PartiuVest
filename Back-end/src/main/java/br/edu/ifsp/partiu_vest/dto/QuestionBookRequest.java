@@ -1,9 +1,10 @@
 package br.edu.ifsp.partiu_vest.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class QuestionBookRequest {
-    @NotBlank
+    @NotNull
     private long questionBookId;
 
     public QuestionBookRequest(long questionBookId) {
