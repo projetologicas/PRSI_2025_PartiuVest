@@ -15,7 +15,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,15 +59,29 @@ public class JsonlProcessorService {
 
         try(Stream<String> lines = Files.lines(path)){
             List<Question> questions = lines
-                    // 2. CORREÇÃO DE ESCOPO: Passa questionBook para o mapeamento
-                    .map(line -> mapLineToQuestion(line, questionBook))
+                    .flatMap(line -> safeReadValue(line).stream())
+                    .map(source -> mapSourceToQuestion(source, questionBook))
                     .filter(q -> q != null)
                     .collect(Collectors.toList());
 
             System.out.println(">>>> Encontradas " + questions.size() + " questões válidas para salvar. <<<<");
 
             if (!questions.isEmpty()) {
+
+                Set<QuestionBook> questionBooksSet = new HashSet<>();
+                questionBooksSet.add(questionBook);
+
+                if (questionBook.getQuestions() == null) {
+                    questionBook.setQuestions(new HashSet<>());
+                }
+
+                for (Question question : questions) {
+                    question.setQuestionBook(questionBooksSet);
+                    questionBook.getQuestions().add(question);
+                }
+
                 questionRepository.saveAll(questions);
+                questionBookRepository.save(questionBook);
                 System.out.println("SUCESSO: Salvas " + questions.size() + " questões para a Prova [" + bookName + "].");
             } else {
                 System.err.println("AVISO: A lista de questões está vazia. O arquivo pode estar vazio ou ocorreu um erro de mapeamento CRÍTICO (Verifique o System.err acima).");
@@ -72,7 +89,6 @@ public class JsonlProcessorService {
         }catch(IOException ex){
             System.err.println("ERRO DE I/O ao ler arquivo: " + ex.getMessage());
         }
-
     }
 
     private QuestionBook findOrCreateQuestionBook(String name) {
@@ -88,41 +104,46 @@ public class JsonlProcessorService {
                 });
     }
 
-    private Question mapLineToQuestion(String line, QuestionBook questionBook){
-        try{
-            JsonlSource source = objectMapper.readValue(line, JsonlSource.class);
-            Integer number = extractQuestionNumber(source.getId());
-            String descImg = String.join("\n", source.getDescription());
-
-            List<String> alternatives = source.getAlternatives();
-            String enunA = alternatives.size() > 0 ? alternatives.get(0) : "";
-            String enunB = alternatives.size() > 1 ? alternatives.get(1) : "";
-            String enunC = alternatives.size() > 2 ? alternatives.get(2) : "";
-            String enunD = alternatives.size() > 3 ? alternatives.get(3) : "";
-            String enunE = alternatives.size() > 4 ? alternatives.get(4) : "";
-
-            Question newQuestion = new Question(
-                    number,
-                    source.getQuestion(),
-                    descImg,
-                    enunA,
-                    enunB,
-                    enunC,
-                    enunD,
-                    enunE,
-                    source.getLabel());
-
-            newQuestion.setQuestionBook(questionBook);
-
-            return newQuestion;
-
-        }catch(Exception ex) {
+    private Optional<JsonlSource> safeReadValue(String line) {
+        try {
+            return Optional.of(objectMapper.readValue(line, JsonlSource.class));
+        } catch (Exception ex) {
             System.err.println("Erro critico ao processar linha JSONL. Linha ignorada.");
             System.err.println("Causa: " + ex.getMessage());
             ex.printStackTrace(System.err);
             System.err.println("Linha que causou o erro: " + line.substring(0, Math.min(line.length(), 100)) + "...");
+            return Optional.empty();
+        }
+    }
+
+    private Question mapSourceToQuestion(JsonlSource source, QuestionBook questionBook){
+        Integer number = extractQuestionNumber(source.getId());
+        String descImg = String.join("\n", source.getDescription());
+
+        Question existingQuestion = questionRepository.findByNumberAndQuestionBookId(number, questionBook.getId());
+
+        if (existingQuestion != null) {
             return null;
         }
+
+        List<String> alternatives = source.getAlternatives();
+        String enunA = alternatives.size() > 0 ? alternatives.get(0) : "";
+        String enunB = alternatives.size() > 1 ? alternatives.get(1) : "";
+        String enunC = alternatives.size() > 2 ? alternatives.get(2) : "";
+        String enunD = alternatives.size() > 3 ? alternatives.get(3) : "";
+        String enunE = alternatives.size() > 4 ? alternatives.get(4) : "";
+
+        Question newQuestion = new Question(
+                number,
+                source.getQuestion(),
+                descImg,
+                enunA,
+                enunB,
+                enunC,
+                enunD,
+                enunE,
+                source.getLabel());
+        return newQuestion;
     }
 
     private Integer extractQuestionNumber(String id){
