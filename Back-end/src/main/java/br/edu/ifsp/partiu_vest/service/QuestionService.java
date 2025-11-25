@@ -1,5 +1,6 @@
 package br.edu.ifsp.partiu_vest.service;
 
+import br.edu.ifsp.partiu_vest.dto.AttemptRequest;
 import br.edu.ifsp.partiu_vest.dto.QuestionRequest;
 import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.repository.QuestionRepository;

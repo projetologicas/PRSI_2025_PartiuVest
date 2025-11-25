@@ -13,6 +13,7 @@ public class QuestionResponse {
     private String enum_c;
     private String enum_d;
     private String enum_e;
+    private String answer;
     private int number;
 
     public static QuestionResponse from(Question question) {
@@ -25,11 +26,12 @@ public class QuestionResponse {
         response.enum_c = question.getEnum_c();
         response.enum_d = question.getEnum_d();
         response.enum_e = question.getEnum_e();
+        response.answer = question.getAnswer();
         response.number = question.getNumber();
         return response;
     }
 
-    public QuestionResponse(Long id, String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, int number) {
+    public QuestionResponse(Long id, String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, String answer, int number) {
         this.id = id;
         this.title = title;
         this.image_desc = image_desc;
@@ -38,6 +40,7 @@ public class QuestionResponse {
         this.enum_c = enum_c;
         this.enum_d = enum_d;
         this.enum_e = enum_e;
+        this.answer = answer;
         this.number = number;
     }
 
@@ -70,6 +73,14 @@ public class QuestionResponse {
 
     public String getEnum_a() {
         return enum_a;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     public void setEnum_a(String enum_a) {

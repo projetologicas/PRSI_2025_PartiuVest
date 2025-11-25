@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class QuestionController {
     private final QuestionService question_service;
 
-
     public QuestionController(QuestionService questionService) {
         question_service = questionService;
     }
