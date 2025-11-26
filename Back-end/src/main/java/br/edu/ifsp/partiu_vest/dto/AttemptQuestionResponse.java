@@ -1,17 +1,18 @@
 package br.edu.ifsp.partiu_vest.dto;
 
 import br.edu.ifsp.partiu_vest.model.Attempt;
+import br.edu.ifsp.partiu_vest.model.AttemptQuestion;
 import br.edu.ifsp.partiu_vest.model.User;
 
 public class AttemptQuestionResponse {
-    private Long id;
+    private AttemptQuestion question;
     private Attempt attempt;
     private User user;
     private String user_answer;
     private String right_answer;
 
-    public AttemptQuestionResponse(Long id, Attempt attempt, User user, String user_answer, String right_answer) {
-        this.id = id;
+    public AttemptQuestionResponse(AttemptQuestion question, Attempt attempt, User user, String user_answer, String right_answer) {
+        this.question = question;
         this.attempt = attempt;
         this.user = user;
         this.user_answer = user_answer;
@@ -21,12 +22,12 @@ public class AttemptQuestionResponse {
     public AttemptQuestionResponse() {
     }
 
-    public Long getId() {
-        return id;
+    public AttemptQuestion getQuestion() {
+        return question;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setQuestion(AttemptQuestion question) {
+        this.question = question;
     }
 
     public Attempt getAttempt() {
