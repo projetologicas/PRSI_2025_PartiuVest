@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-
 type RegisterForm = {
     email: string;
     password: string;
     nick: string;
 };
-
 
 export default function RegisterPage() {
     const [form, setForm] = useState<RegisterForm>({
@@ -16,21 +14,17 @@ export default function RegisterPage() {
         nick: "",
     });
 
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setLoading(true);
-
 
         try {
             const resp = await axios.post("/api/auth/register", form);
@@ -41,7 +35,6 @@ export default function RegisterPage() {
             setLoading(false);
         }
     };
-
 
     return (
         <div className="min-h-screen bg-[#1e1b1c] flex flex-col items-center pt-6">
@@ -56,3 +49,90 @@ export default function RegisterPage() {
                 PartiuVest
             </div>
 
+            {/* Card central */}
+            <div className="w-[90%] max-w-[1200px] bg-[#dcdcdc] mt-8 p-12 min-h-[600px] shadow-2xl">
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col gap-16 max-w-[500px] mx-auto mt-10"
+                >
+                    {/* Email */}
+                    <div>
+                        <label
+                            htmlFor="email"
+                            className="text-4xl font-bold text-[#bdbdbd] block mb-2"
+                            style={{ fontFamily: "monospace" }}
+                        >
+                            E-mail
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-transparent border-b-2 border-black outline-none text-2xl py-2"
+                        />
+                    </div>
+
+                    {/* Senha */}
+                    <div>
+                        <label
+                            htmlFor="password"
+                            className="text-4xl font-bold text-[#bdbdbd] block mb-2"
+                            style={{ fontFamily: "monospace" }}
+                        >
+                            Senha
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={form.password}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-transparent border-b-2 border-black outline-none text-2xl py-2"
+                        />
+                    </div>
+
+                    {/* Nick */}
+                    <div>
+                        <label
+                            htmlFor="nick"
+                            className="text-4xl font-bold text-[#bdbdbd] block mb-2"
+                            style={{ fontFamily: "monospace" }}
+                        >
+                            Nick
+                        </label>
+                        <input
+                            type="text"
+                            id="nick"
+                            name="nick"
+                            value={form.nick}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-transparent border-b-2 border-black outline-none text-2xl py-2"
+                        />
+                    </div>
+
+                    {error && <p className="text-red-600 text-lg">{error}</p>}
+
+                    {/* Botão */}
+                    <div className="flex justify-center mt-6">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-64 py-4 text-3xl font-extrabold rounded-full shadow-xl active:translate-y-0.5"
+                            style={{
+                                background: "linear-gradient(90deg,#14e7b1,#0dd6b6)",
+                                fontFamily: "monospace",
+                            }}
+                        >
+                            {loading ? "Cadastrando..." : "Cadastrar"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
