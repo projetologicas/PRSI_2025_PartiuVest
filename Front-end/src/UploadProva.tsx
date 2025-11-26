@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+//import { Card, CardContent } from "@/components/ui/card";
+//import { Button } from "@/components/ui/button";
 
 export default function AdminJsonUpload() {
     const [jsonText, setJsonText] = useState("");
@@ -59,8 +59,8 @@ export default function AdminJsonUpload() {
             </div>
 
             {/* Caixa branca */}
-            <Card className="w-[80%] max-w-4xl bg-white rounded-3xl shadow-lg p-6">
-                <CardContent>
+            {/*<Card className="w-[80%] max-w-4xl bg-white rounded-3xl shadow-lg p-6">
+                <CardContent>*/}
           <textarea
               className="w-full h-72 p-4 border rounded-xl text-lg outline-none resize-none"
               placeholder="Cole aqui o JSON"
@@ -70,16 +70,16 @@ export default function AdminJsonUpload() {
 
                     {error && <p className="text-red-600 mt-3 font-semibold">{error}</p>}
                     {success && <p className="text-green-600 mt-3 font-semibold">{success}</p>}
-                </CardContent>
+                {/*</CardContent>
             </Card>
 
-            {/* Botão */}
+            {/* Botão 
             <Button
                 onClick={handleSubmit}
                 className="mt-10 text-2xl font-extrabold px-12 py-5 rounded-full shadow-md bg-[#1fe4c2] hover:scale-105 transition-all"
             >
                 Cadastrar
-            </Button>
+            </Button>*/}
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User } from "lucide-react";
+// import type { User } from "./types/User";
 
 export default function DashboardPage() {
     return (
@@ -26,7 +26,7 @@ export default function DashboardPage() {
 
                 {/* Icon usuário */}
                 <div className="bg-white rounded-full p-2 shadow-md">
-                    <User size={50} color="black" />
+                    
                 </div>
             </nav>
 
