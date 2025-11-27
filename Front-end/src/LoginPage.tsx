@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { setTokenCookie, getTokenCookie, removeTokenCookie } from "./services/Cookies.ts"
 
 type LoginForm = {
     email: string;
@@ -22,9 +23,11 @@ export default function LoginPage() {
 
         try {
             // Example axios POST. Configure baseURL globally or replace with absolute URL
-            const resp = await axios.post('/api/auth/login', form);
+            const resp = await axios.post('http://localhost:8080/auth/login', form);
             // resp.data -> token or user
             console.log('Login success', resp.data);
+            setTokenCookie(resp.data.token, 1);
+            console.log(resp.data.token)
             // redirect or save token...
         } catch (err: any) {
             console.error(err);

@@ -4,14 +4,14 @@ import axios from "axios";
 type RegisterForm = {
     email: string;
     password: string;
-    nick: string;
+    name: string;
 };
 
 export default function RegisterPage() {
     const [form, setForm] = useState<RegisterForm>({
         email: "",
         password: "",
-        nick: "",
+        name: "",
     });
 
     const [loading, setLoading] = useState(false);
@@ -27,9 +27,11 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const resp = await axios.post("/api/auth/register", form);
+            console.log(form)
+            const resp = await axios.post("http://localhost:8080/auth/register", form);
             console.log("Conta criada:", resp.data);
         } catch (err: any) {
+            console.log(err);
             setError(err?.response?.data?.message ?? "Erro ao cadastrar");
         } finally {
             setLoading(false);
@@ -95,20 +97,20 @@ export default function RegisterPage() {
                         />
                     </div>
 
-                    {/* Nick */}
+                    {/* Name */}
                     <div>
                         <label
-                            htmlFor="nick"
+                            htmlFor="name"
                             className="text-4xl font-bold text-[#bdbdbd] block mb-2"
                             style={{ fontFamily: "monospace" }}
                         >
-                            Nick
+                            Name
                         </label>
                         <input
                             type="text"
-                            id="nick"
-                            name="nick"
-                            value={form.nick}
+                            id="name"
+                            name="name"
+                            value={form.name}
                             onChange={handleChange}
                             required
                             className="w-full bg-transparent border-b-2 border-black outline-none text-2xl py-2"
