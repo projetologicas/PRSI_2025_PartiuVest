@@ -1,6 +1,5 @@
-import { User } from "lucide-react";
 import { Link } from "react-router-dom";
-
+// import { User } from "./types/User"
 
 export default function AdminHome() {
     return (
@@ -15,7 +14,6 @@ export default function AdminHome() {
                     </div>
                 </div>
 
-
                 {/* MENU */}
                 <nav className="flex gap-6 text-lg font-semibold text-gray-300">
                     <Link to="/admin" className="hover:text-white transition">Home</Link>
@@ -23,11 +21,9 @@ export default function AdminHome() {
                     <Link to="/cadastrar" className="hover:text-white transition">Cadastrar</Link>
                 </nav>
 
-
                 {/* ICON */}
-                <User className="w-10 h-10 text-white" />
+                
             </div>
-
 
             {/* MAIN CONTENT */}
             <div className="w-full max-w-5xl bg-gray-300 mt-8 rounded-xl p-10 flex items-center justify-center text-center shadow-lg">

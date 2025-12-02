@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { User } from "lucide-react";
-
+// import type { User } from "./types/User";
 
 export default function DashboardPage() {
     return (
@@ -18,7 +17,6 @@ export default function DashboardPage() {
                     PartiuVest
                 </div>
 
-
                 {/* Links */}
                 <div className="flex gap-10 text-3xl font-bold" style={{ fontFamily: "monospace" }}>
                     <Link to="/dashboard" className="hover:opacity-70">Home</Link>
@@ -26,20 +24,17 @@ export default function DashboardPage() {
                     <Link to="/loja" className="hover:opacity-70">Loja</Link>
                 </div>
 
-
                 {/* Icon usuário */}
                 <div className="bg-white rounded-full p-2 shadow-md">
-                    <User size={50} color="black" />
+                    
                 </div>
             </nav>
-
 
             {/* Conteúdo principal */}
             <div className="bg-[#dcdcdc] text-black mt-2 mx-4 p-16 min-h-[600px] text-center shadow-xl">
                 <p className="text-4xl font-extrabold mb-32" style={{ fontFamily: "monospace" }}>
                     Aqui abaixo irão textos explicando <br /> funcionamento do sistema.
                 </p>
-
 
                 {/* Botão Fazer Prova */}
                 <div className="flex justify-center">
