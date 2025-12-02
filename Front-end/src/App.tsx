@@ -14,8 +14,11 @@ function App() {
       <BrowserRouter>
           <Routes>
               <Route path="/" element={<LoginPage />} />
+              <Route path="/homeAluno" element={<HomeAluno/>} />
+              <Route path="/homeADM" element={<HomeADM/>} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/uploadProva" element={<UploadProva />} />
+              <Route path="/dados" elemet={<Dados/>} />
           </Routes>
       </BrowserRouter>
   );
