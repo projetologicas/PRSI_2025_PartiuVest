@@ -44,7 +44,7 @@ export default function LoginPage() {
                 <div className="flex-1 relative bg-[#1b1819] p-8 flex items-center justify-center overflow-hidden">
                     {/* background brain image - put your exported png/svg in public/brain-bg.png */}
                     <img
-                        src="/brain-bg.png"
+                        src="/assets/cerebro.png"
                         alt="brain"
                         className="absolute right-0 h-[480px] opacity-95 select-none pointer-events-none"
                         style={{ transform: 'translateX(10%)' }}
