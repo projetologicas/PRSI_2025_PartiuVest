@@ -76,7 +76,7 @@ public class JsonlProcessorService {
                 }
 
                 for (Question question : questions) {
-                    question.setQuestionBook(questionBooksSet);
+                    question.setQuestion_book(questionBook);
                     questionBook.getQuestions().add(question);
                 }
                 

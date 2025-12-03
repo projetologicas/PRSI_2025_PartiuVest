@@ -3,11 +3,17 @@ package br.edu.ifsp.partiu_vest.repository;
 import br.edu.ifsp.partiu_vest.model.Attempt;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface AttemptRepository extends JpaRepository<Attempt, Long> {
-    public List<Attempt> findByQuestionBook(QuestionBook question_book);
+    @Query(value = "SELECT a.* FROM attempt a " +
+            "JOIN question_book qb ON a.question_book_id = qb.id " +
+            "WHERE a.question_book_id = :question_book_id",
+            nativeQuery = true)
+    public List<Attempt> findByQuestionBook(@Param("number") Long question_book_id);
 
 }
 

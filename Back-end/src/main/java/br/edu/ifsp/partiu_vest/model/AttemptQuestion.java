@@ -12,10 +12,11 @@ public class AttemptQuestion {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "attempt_id")
     private Attempt attempt;
 
-    @Column
+    @ManyToOne
+    @JoinColumn(name = "question_id")
     private Question question;
 
     @Column
@@ -23,8 +24,9 @@ public class AttemptQuestion {
     @Column
     private LocalDate date;
 
-    public AttemptQuestion(Attempt attempt, String user_answer, LocalDate date) {
+    public AttemptQuestion(Attempt attempt, Question question, String user_answer, LocalDate date) {
         this.attempt = attempt;
+        this.question = question;
         this.user_answer = user_answer;
         this.date = date;
     }
@@ -71,5 +73,16 @@ public class AttemptQuestion {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "AttemptQuestion{" +
+                "id=" + id +
+                ", attempt=" + attempt.getId() +
+                ", question=" + question.getId() +
+                ", user_answer='" + user_answer + '\'' +
+                ", date=" + date +
+                '}';
     }
 }

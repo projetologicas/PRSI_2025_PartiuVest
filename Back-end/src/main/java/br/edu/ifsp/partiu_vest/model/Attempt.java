@@ -41,6 +41,14 @@ public class Attempt {
 
     }
 
+    public Set<AttemptQuestion> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(Set<AttemptQuestion> questions) {
+        this.questions = questions;
+    }
+
     public Long getId() {
         return id;
     }
@@ -75,5 +83,17 @@ public class Attempt {
 
     public void setEnd_date(LocalDate end_date) {
         this.end_date = end_date;
+    }
+
+    @Override
+    public String toString() {
+        return "Attempt{" +
+                "id=" + id +
+                ", question_book=" + question_book.getId() +
+                ", user=" + user.getId() +
+                ", questions=" + questions +
+                ", start_date=" + start_date +
+                ", end_date=" + end_date +
+                '}';
     }
 }

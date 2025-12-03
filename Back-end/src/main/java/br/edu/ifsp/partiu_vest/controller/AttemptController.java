@@ -5,18 +5,17 @@ import br.edu.ifsp.partiu_vest.dto.AttemptQuestionResponse;
 import br.edu.ifsp.partiu_vest.dto.AttemptRequest;
 import br.edu.ifsp.partiu_vest.dto.AttemptResponse;
 import br.edu.ifsp.partiu_vest.model.Attempt;
+import br.edu.ifsp.partiu_vest.model.User;
 import br.edu.ifsp.partiu_vest.service.AttemptService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/attempt")
@@ -30,17 +29,30 @@ public class AttemptController {
     @PostMapping("/")
     public ResponseEntity<AttemptResponse> getAttemptById(@Valid @RequestBody AttemptRequest dto) {
         Attempt attempt = attempt_service.getAttemptById(dto);
-        return ResponseEntity.ok(AttemptResponse.from(attempt));
+        AttemptResponse response = new AttemptResponse();
+        return ResponseEntity.ok(response.from(attempt));
     }
 
-    @PostMapping("/attempts")
-    public ResponseEntity<AttemptResponse> getAttemptsByQuestionBook(@Valid @RequestBody AttemptRequest dto) {
-        Set<Attempt> set = new HashSet<Attempt>(attempt_service.getAttemptsByQuestionBook(dto));
-        return ResponseEntity.ok(new AttemptResponse(set));
+    @PostMapping("/question_book")
+    public ResponseEntity<HashSet<AttemptResponse>> getAttemptsByQuestionBook(@Valid @RequestBody AttemptRequest dto) {
+        Set<Attempt> set = new HashSet<>(attempt_service.getAttemptsByQuestionBook(dto));
+        Iterator<Attempt> iterator = set.iterator();
+        HashSet<AttemptResponse> response = new HashSet<>();
+
+        while (iterator.hasNext()) {
+            AttemptResponse ar = AttemptResponse.from(iterator.next());
+            response.add(ar);
+        }
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/attempt/question")
+    @PostMapping("/question")
     public ResponseEntity<AttemptQuestionResponse> commitAttemptQuestion(@Valid @RequestBody AttemptQuestionRequest dto) {
         return ResponseEntity.ok(attempt_service.commitQuestionAnswer(dto));
+    }
+
+    @PostMapping("/new")
+    public ResponseEntity<AttemptResponse> newAttempt(@Valid @RequestBody AttemptRequest dto, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(attempt_service.newAttempt(dto, user));
     }
 }

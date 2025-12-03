@@ -1,35 +1,80 @@
 package br.edu.ifsp.partiu_vest.dto;
 
-import br.edu.ifsp.partiu_vest.model.Attempt;
-import br.edu.ifsp.partiu_vest.model.Question;
-import br.edu.ifsp.partiu_vest.model.QuestionBook;
-import br.edu.ifsp.partiu_vest.model.User;
-import jakarta.persistence.*;
+import br.edu.ifsp.partiu_vest.model.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class AttemptResponse {
-    private Set<Attempt> attempts;
+    private Long id;
+    private Long question_book_id;
+    private User user;
+    private Set<AttemptQuestion> questions;
+    private LocalDate start_date;
+    private LocalDate end_date;
 
-    public AttemptResponse(Set<Attempt> attempts) {
-        this.attempts = attempts;
-    }
     public static AttemptResponse from(Attempt attempt) {
         var response = new AttemptResponse();
-        response.attempts.add(attempt);
+        response.id = attempt.getId();
+        response.question_book_id = attempt.getQuestion_book().getId();
+        response.user = attempt.getUser();
+        response.questions = attempt.getQuestions();
+        response.start_date = attempt.getStart_date();
+        response.end_date = attempt.getEnd_date();
         return response;
     }
 
     public AttemptResponse() {
     }
 
-    public Set<Attempt> getAttempts() {
-        return attempts;
+    public Long getId() {
+        return id;
     }
 
-    public void setAttempts(Set<Attempt> attempts) {
-        this.attempts = attempts;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getQuestion_book_id() {
+        return question_book_id;
+    }
+
+    public void setQuestion_book_id(Long question_book_id) {
+        this.question_book_id = question_book_id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<AttemptQuestion> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(Set<AttemptQuestion> questions) {
+        this.questions = questions;
+    }
+
+    public LocalDate getStart_date() {
+        return start_date;
+    }
+
+    public void setStart_date(LocalDate start_date) {
+        this.start_date = start_date;
+    }
+
+    public LocalDate getEnd_date() {
+        return end_date;
+    }
+
+    public void setEnd_date(LocalDate end_date) {
+        this.end_date = end_date;
     }
 }

@@ -28,10 +28,9 @@ public class Question {
     private int number;
     @Column
     private String answer;
-    @ManyToMany(mappedBy = "questions")
-    private Set<Attempt> attempts;
-    @ManyToMany(mappedBy = "questions")
-    private Set<QuestionBook> questionBook;
+    @ManyToOne
+    @JoinColumn(name = "question_book_id")
+    private QuestionBook question_book;
 
     public Question(String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, int number, String answer) {
         setTitle(title);
@@ -136,7 +135,16 @@ public class Question {
     public void setEnum_e(String enum_e) {
         this.enum_e = enum_e;
     }
-    public void setQuestionBook(Set<QuestionBook> questionBook) {
-        this.questionBook = questionBook;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public QuestionBook getQuestion_book() {
+        return question_book;
+    }
+
+    public void setQuestion_book(QuestionBook question_book) {
+        this.question_book = question_book;
     }
 }

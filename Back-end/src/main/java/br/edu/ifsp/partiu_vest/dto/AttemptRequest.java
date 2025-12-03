@@ -5,13 +5,11 @@ import br.edu.ifsp.partiu_vest.model.User;
 
 public class AttemptRequest {
     private Long id;
-    private QuestionBook question_book;
-    private User user;
+    private Long question_book_id;
 
-    public AttemptRequest(Long id, QuestionBook question_book, User user) {
+    public AttemptRequest(Long id, Long question_book_id) {
         this.id = id;
-        this.question_book = question_book;
-        this.user = user;
+        this.question_book_id = question_book_id;
     }
 
     public AttemptRequest() {
@@ -25,19 +23,11 @@ public class AttemptRequest {
         this.id = id;
     }
 
-    public QuestionBook getQuestion_book() {
-        return question_book;
+    public Long getQuestion_book_id() {
+        return question_book_id;
     }
 
-    public void setQuestion_book(QuestionBook question_book) {
-        this.question_book = question_book;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setQuestion_book(Long question_book_id) {
+        this.question_book_id = question_book_id;
     }
 }

@@ -18,7 +18,7 @@ public class PartiuVestApplication {
     public CommandLineRunner runRandomGenerationTest(QuestionBookService service){
         return args -> {
             System.out.println("Iniciando teste de Geração Aleatória");
-            service.createRandomExam();
+            // service.createRandomExam();
             System.out.println("Teste de Geração Aleatória concluído.");
         };
     }
