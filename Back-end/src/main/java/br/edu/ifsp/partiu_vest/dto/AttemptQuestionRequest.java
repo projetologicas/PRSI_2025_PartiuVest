@@ -6,13 +6,13 @@ import br.edu.ifsp.partiu_vest.model.User;
 
 public class AttemptQuestionRequest {
     private Long id;
-    private Attempt attempt;
+    private Long attempt_id;
     private User user;
     private String user_answer;
 
-    public AttemptQuestionRequest(Long id, Attempt attempt, User user, String user_answer) {
+    public AttemptQuestionRequest(Long id, Long attempt_id, User user, String user_answer) {
         this.id = id;
-        this.attempt = attempt;
+        this.attempt_id = attempt_id;
         this.user = user;
         this.user_answer = user_answer;
     }
@@ -28,12 +28,12 @@ public class AttemptQuestionRequest {
         this.id = id;
     }
 
-    public Attempt getAttempt() {
-        return attempt;
+    public Long getAttempt_id() {
+        return attempt_id;
     }
 
-    public void setAttempt(Attempt attempt) {
-        this.attempt = attempt;
+    public void setAttempt_id(Long attempt_id) {
+        this.attempt_id = attempt_id;
     }
 
     public User getUser() {

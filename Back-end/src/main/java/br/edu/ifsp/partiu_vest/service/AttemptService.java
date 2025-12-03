@@ -39,13 +39,13 @@ public class AttemptService {
     }
 
     public AttemptQuestionResponse commitQuestionAnswer(AttemptQuestionRequest dto) {
-        Attempt attempt = dto.getAttempt();
+        Attempt attempt = attempt_repository.findById(dto.getAttempt_id()).get();
         AttemptQuestion user_attempt_question = attempt_question_repository.findById(dto.getId()).get();
         user_attempt_question.setDate(LocalDate.now());
         user_attempt_question.setUser_answer(dto.getUser_answer());
         attempt_question_repository.save(user_attempt_question);
 
-        return new AttemptQuestionResponse(user_attempt_question, attempt, dto.getUser(), dto.getUser_answer(), user_attempt_question.getQuestion().getAnswer());
+        return new AttemptQuestionResponse(user_attempt_question.getId(), attempt.getId(), dto.getUser().getId(), dto.getUser_answer(), user_attempt_question.getQuestion().getAnswer());
     }
 
     public AttemptResponse newAttempt(AttemptRequest dto, User user) {

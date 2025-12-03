@@ -5,16 +5,16 @@ import br.edu.ifsp.partiu_vest.model.AttemptQuestion;
 import br.edu.ifsp.partiu_vest.model.User;
 
 public class AttemptQuestionResponse {
-    private AttemptQuestion question;
-    private Attempt attempt;
-    private User user;
+    private Long question_id;
+    private Long attempt_id;
+    private Long user_id;
     private String user_answer;
     private String right_answer;
 
-    public AttemptQuestionResponse(AttemptQuestion question, Attempt attempt, User user, String user_answer, String right_answer) {
-        this.question = question;
-        this.attempt = attempt;
-        this.user = user;
+    public AttemptQuestionResponse(Long question, Long attempt, Long user, String user_answer, String right_answer) {
+        this.question_id = question;
+        this.attempt_id = attempt;
+        this.user_id = user;
         this.user_answer = user_answer;
         this.right_answer = right_answer;
     }
@@ -22,28 +22,28 @@ public class AttemptQuestionResponse {
     public AttemptQuestionResponse() {
     }
 
-    public AttemptQuestion getQuestion() {
-        return question;
+    public Long getQuestion_id() {
+        return question_id;
     }
 
-    public void setQuestion(AttemptQuestion question) {
-        this.question = question;
+    public void setQuestion_id(Long question_id) {
+        this.question_id = question_id;
     }
 
-    public Attempt getAttempt() {
-        return attempt;
+    public Long getAttempt_id() {
+        return attempt_id;
     }
 
-    public void setAttempt(Attempt attempt) {
-        this.attempt = attempt;
+    public void setAttempt_id(Long attempt_id) {
+        this.attempt_id = attempt_id;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUser_id() {
+        return user_id;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(Long user_id) {
+        this.user_id = user_id;
     }
 
     public String getUser_answer() {
