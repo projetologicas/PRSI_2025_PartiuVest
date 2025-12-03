@@ -10,6 +10,7 @@ import HomeAluno from "./HomeAluno";
 import HomeADM from "./HomeADM";
 import Dados from "./Dados";
 import QuestionPage from './QuestionPage';
+import NotFound from './NotFound.tsx';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -24,6 +25,7 @@ function App() {
               <Route path="/uploadProva" element={<UploadProva />} />
               <Route path="/fazerProva" element={<QuestionPage/>} />
               <Route path="/dados" element={<Dados/>} />
+              <Route path="/notFound" element={<NotFound/>}/>
           </Routes>
       </BrowserRouter>
   );
