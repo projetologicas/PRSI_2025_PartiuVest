@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
-// import type { User } from "./types/User";
+import userIcon from "../assets/perfil.png";
+import { UserContext } from "../common/context/UserCotext";
+import { useContext } from "react";
 
 export default function DashboardPage() {
+    const context = useContext(UserContext);
     return (
         <div className="min-h-screen bg-[#1e1b1c] text-white select-none">
             {/* NAVBAR */}
@@ -19,15 +22,26 @@ export default function DashboardPage() {
 
                 {/* Links */}
                 <div className="flex gap-10 text-3xl font-bold" style={{ fontFamily: "monospace" }}>
-                    <Link to="/dashboard" className="hover:opacity-70">Home</Link>
+                    <Link to="/home" className="hover:opacity-70">Home</Link>
                     <Link to="/vestibulares" className="hover:opacity-70">Vestibulares</Link>
                     <Link to="/loja" className="hover:opacity-70">Loja</Link>
                 </div>
 
                 {/* Icon usuário */}
-                <div className="bg-white rounded-full p-2 shadow-md">
-                    
-                </div>
+                <Link to="/profile" className="no-underline">
+                    <div className="flex items-center gap-4">
+                        <div className="text-xl font-bold">
+                            {context.name}
+                        </div>
+                        <div className="bg-white rounded-full shadow-md cursor-pointer">
+                            <img 
+                                src={userIcon} 
+                                alt="User" 
+                                className="w-12 md:w-16 select-none"
+                                />
+                        </div>
+                    </div>
+                </Link>
             </nav>
 
             {/* Conteúdo principal */}

@@ -1,30 +1,25 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import type { User } from "./types/User";
-import { setTokenCookie, getTokenCookie, removeTokenCookie } from "./services/Cookies.ts"
+import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { UserContext } from "../common/context/UserCotext.tsx";
 
 export default function PerfilPage() {
-    const [data, setData] = useState<User | null>(null);
-
-    useEffect(() => {
-        axios.get("http://localhost:8080/api/data", {
-            headers: {
-                'Authorization': `Bearer ${getTokenCookie()}`
-            }
-            }).then((res) => setData(res.data));
-    }, []);
+    const context = useContext(UserContext);
 
     return (
         <div className="w-full min-h-screen bg-gray-900 flex justify-center p-6 text-black">
             <div className="bg-gray-300 w-full max-w-5xl rounded-xl p-6 shadow-xl">
                 <div className="flex justify-between items-center mb-4">
-                    <button className="px-6 py-2 bg-teal-400 text-black font-bold rounded-full shadow-md">Home</button>
+                    <Link to="/home">
+                        <button className="px-6 py-2 bg-teal-400 text-black font-bold rounded-full shadow-md">Home</button>
+                    </Link>
                     <h1 className="text-3xl font-extrabold text-center flex-1 -ml-20">PartiuVest</h1>
-                    <button className="px-6 py-2 bg-red-500 text-black font-bold rounded-full shadow-md">Sair</button>
+                    <Link to="/home">
+                        <button className="px-6 py-2 bg-red-500 text-black font-bold rounded-full shadow-md">Sair</button>
+                    </Link>
                 </div>
 
                 <div className="flex justify-end mr-4 text-xl font-bold">
-                    {data?.points} <span className="ml-1">💰</span>
+                    {context.points} <span className="ml-1">💰</span>
                 </div>
 
                 <h2 className="text-center text-3xl font-extrabold mb-6">DADOS</h2>
@@ -35,11 +30,11 @@ export default function PerfilPage() {
                     </div>
 
                     <div className="text-xl font-bold space-y-2">
-                        <p>Nome: {data?.name}</p>
-                        <p>Exercícios feitos: {data?.exerciciosFeitos}</p>
-                        <p>Streak: {data?.streak}</p>
-                        <p>Rank: {data?.rank}</p>
-                        <p>Lvl: {data?.xp}</p>
+                        <p>Nome: {context.name}</p>
+                        <p>Exercícios feitos: {context.exerciciosFeitos}</p>
+                        <p>Streak: {context.streak}</p>
+                        <p>Rank: {context.rank}</p>
+                        <p>Lvl: {context.xp}</p>
                     </div>
                 </div>
 

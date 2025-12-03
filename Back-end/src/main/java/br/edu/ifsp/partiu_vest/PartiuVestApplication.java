@@ -18,7 +18,7 @@ public class PartiuVestApplication {
     public CommandLineRunner runRandomGenerationTest(QuestionBookService service){
         return args -> {
             System.out.println("Iniciando teste de Geração Aleatória");
-            // service.createRandomExam();
+            //service.createRandomExam();
             System.out.println("Teste de Geração Aleatória concluído.");
         };
     }
@@ -30,7 +30,7 @@ public class PartiuVestApplication {
             // mudar para 2022, 2023 e 2024 para subir os 3 anos separadamente no bd.
             String path = "provas/2023.jsonl";
 
-            //service.importQuestions(path);
+            service.importQuestions(path);
 
             System.out.println("Importação concluida, desligando.");
         };
