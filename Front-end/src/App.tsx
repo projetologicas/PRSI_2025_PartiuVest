@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import UploadProva from "./UploadProva";
+import HomeAluno from "./HomeAluno";
+import HomeADM from "./HomeADM";
+import Dados from "./Dados";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -18,7 +21,7 @@ function App() {
               <Route path="/homeADM" element={<HomeADM/>} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/uploadProva" element={<UploadProva />} />
-              <Route path="/dados" elemet={<Dados/>} />
+              <Route path="/dados" element={<Dados/>} />
           </Routes>
       </BrowserRouter>
   );

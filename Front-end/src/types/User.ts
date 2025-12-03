@@ -7,4 +7,7 @@ export interface User {
 	streak : number;
     points : number;
     xp : number;
+    exerciciosFeitos: number;
+    rank: string;
+    conquistas: { titulo: string; icone: string }[];
 }

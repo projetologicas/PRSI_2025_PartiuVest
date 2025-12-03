@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-interface UserData {
-    nome: string;
-    lvl: number;
-    exerciciosFeitos: number;
-    streak: number;
-    rank: string;
-    saldo: number;
-    conquistas: { titulo: string; icone: string }[];
-}
+import type { User } from "./types/User";
+import { setTokenCookie, getTokenCookie, removeTokenCookie } from "./services/Cookies.ts"
 
 export default function PerfilPage() {
-    const [data, setData] = useState<UserData | null>(null);
+    const [data, setData] = useState<User | null>(null);
 
     useEffect(() => {
-        axios.get("/api/usuario/dados").then((res) => setData(res.data));
+        axios.get("http://localhost:8080/api/data", {
+            headers: {
+                'Authorization': `Bearer ${getTokenCookie()}`
+            }
+            }).then((res) => setData(res.data));
     }, []);
 
     return (
@@ -28,7 +24,7 @@ export default function PerfilPage() {
                 </div>
 
                 <div className="flex justify-end mr-4 text-xl font-bold">
-                    {data?.saldo} <span className="ml-1">💰</span>
+                    {data?.points} <span className="ml-1">💰</span>
                 </div>
 
                 <h2 className="text-center text-3xl font-extrabold mb-6">DADOS</h2>
@@ -39,14 +35,15 @@ export default function PerfilPage() {
                     </div>
 
                     <div className="text-xl font-bold space-y-2">
-                        <p>Nome: {data?.nome}</p>
+                        <p>Nome: {data?.name}</p>
                         <p>Exercícios feitos: {data?.exerciciosFeitos}</p>
                         <p>Streak: {data?.streak}</p>
                         <p>Rank: {data?.rank}</p>
-                        <p>Lvl: {data?.lvl}</p>
+                        <p>Lvl: {data?.xp}</p>
                     </div>
                 </div>
 
+                {/*
                 <div className="bg-gray-600 mt-10 p-6 rounded-2xl text-white">
                     <h3 className="text-xl font-bold mb-4">Conquistas</h3>
                     <div className="flex gap-10">
@@ -57,7 +54,7 @@ export default function PerfilPage() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { setTokenCookie, getTokenCookie, removeTokenCookie } from "./services/Cookies.ts"
+import cerebro from "./assets/cerebro.png"
 
 type LoginForm = {
     email: string;
@@ -44,7 +45,7 @@ export default function LoginPage() {
                 <div className="flex-1 relative bg-[#1b1819] p-8 flex items-center justify-center overflow-hidden">
                     {/* background brain image - put your exported png/svg in public/brain-bg.png */}
                     <img
-                        src="/assets/cerebro.png"
+                        src={cerebro}
                         alt="brain"
                         className="absolute right-0 h-[480px] opacity-95 select-none pointer-events-none"
                         style={{ transform: 'translateX(10%)' }}
