@@ -9,6 +9,7 @@ import UploadProva from "./UploadProva";
 import HomeAluno from "./HomeAluno";
 import HomeADM from "./HomeADM";
 import Dados from "./Dados";
+import QuestionPage from './QuestionPage';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -21,6 +22,7 @@ function App() {
               <Route path="/homeADM" element={<HomeADM/>} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/uploadProva" element={<UploadProva />} />
+              <Route path="/fazerProva" element={<QuestionPage/>} />
               <Route path="/dados" element={<Dados/>} />
           </Routes>
       </BrowserRouter>
