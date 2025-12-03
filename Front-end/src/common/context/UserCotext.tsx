@@ -1,5 +1,4 @@
 import { useState, createContext } from 'react';
-import type { Component } from 'react';
 
 export const UserContext = createContext({
     name: "",

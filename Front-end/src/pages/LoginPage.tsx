@@ -4,6 +4,7 @@ import { setTokenCookie, getTokenCookie, removeTokenCookie } from "../services/C
 import cerebro from "../assets/brain.png";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../common/context/UserCotext.tsx";
+import { SystemContext } from "../common/context/SystemContext.tsx";
 
 type LoginForm = {
     email: string;
@@ -11,11 +12,10 @@ type LoginForm = {
 };
 
 export default function LoginPage() {
-  const context = useContext(UserContext);
+  const userContext = useContext(UserContext);
+  const systemContext = useContext(SystemContext);
   const navigate = useNavigate();
   const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,8 +23,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      setLoading(true);
-      setError(null);
+      systemContext.setLoading(true);
+      systemContext.setError(null);
 
       try {
           const resp = await axios.post('http://localhost:8080/auth/login', form);
@@ -36,14 +36,14 @@ export default function LoginPage() {
                 'Authorization': `Bearer ${getTokenCookie()}`
             }
           });
-          context.setName(userResp.data.name);
+          userContext.setName(userResp.data.name);
           
           navigate('/home');
       } catch (err: any) {
           console.error(err);
-          setError(err?.response?.data?.message ?? 'Erro ao autenticar');
+          systemContext.setError(err?.response?.data?.message ?? 'Erro ao autenticar');
       } finally {
-          setLoading(false);
+          systemContext.setLoading(false);
       }
   };
 

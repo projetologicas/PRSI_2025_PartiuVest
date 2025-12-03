@@ -1,9 +1,30 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../common/context/UserCotext.tsx";
+import { SystemContext } from "../common/context/SystemContext.tsx";
+import axios from "axios";
 
 export default function PerfilPage() {
-    const context = useContext(UserContext);
+    const userContext = useContext(UserContext);
+    const systemContext = useContext(SystemContext);
+    const navigate = useNavigate();
+
+    const handleLogout = async (e: React.FormEvent) => {
+        e.preventDefault();
+        systemContext.setError(null);
+        systemContext.setLoading(true);
+
+        try {
+            const resp = await axios.post("http://localhost:8080/auth/logout");
+            console.log("Conta criada:", resp.data);
+            navigate('/');
+        } catch (err: any) {
+            console.log(err);
+            systemContext.setError(err?.response?.data?.message ?? "Erro ao sair");
+        } finally {
+            systemContext.setLoading(false);
+        }
+    };
 
     return (
         <div className="w-full min-h-screen bg-gray-900 flex justify-center p-6 text-black">
@@ -13,13 +34,11 @@ export default function PerfilPage() {
                         <button className="px-6 py-2 bg-teal-400 text-black font-bold rounded-full shadow-md">Home</button>
                     </Link>
                     <h1 className="text-3xl font-extrabold text-center flex-1 -ml-20">PartiuVest</h1>
-                    <Link to="/home">
-                        <button className="px-6 py-2 bg-red-500 text-black font-bold rounded-full shadow-md">Sair</button>
-                    </Link>
+                    <button onClick={handleLogout} className="px-6 py-2 bg-red-500 text-black font-bold rounded-full shadow-md">Sair</button>
                 </div>
 
                 <div className="flex justify-end mr-4 text-xl font-bold">
-                    {context.points} <span className="ml-1">💰</span>
+                    {userContext.points} <span className="ml-1">💰</span>
                 </div>
 
                 <h2 className="text-center text-3xl font-extrabold mb-6">DADOS</h2>
@@ -30,11 +49,11 @@ export default function PerfilPage() {
                     </div>
 
                     <div className="text-xl font-bold space-y-2">
-                        <p>Nome: {context.name}</p>
-                        <p>Exercícios feitos: {context.exerciciosFeitos}</p>
-                        <p>Streak: {context.streak}</p>
-                        <p>Rank: {context.rank}</p>
-                        <p>Lvl: {context.xp}</p>
+                        <p>Nome: {userContext.name}</p>
+                        <p>Exercícios feitos: {userContext.exerciciosFeitos}</p>
+                        <p>Streak: {userContext.streak}</p>
+                        <p>Rank: {userContext.rank}</p>
+                        <p>Lvl: {userContext.xp}</p>
                     </div>
                 </div>
 
