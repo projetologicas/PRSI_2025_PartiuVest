@@ -11,6 +11,7 @@ import java.util.Set;
 public class AttemptResponse {
     private Long id;
     private Long question_book_id;
+    private Long user_id;
     private Set<Long> questions_id;
     private LocalDate start_date;
     private LocalDate end_date;
@@ -23,14 +24,23 @@ public class AttemptResponse {
         Iterator<AttemptQuestion> iterator = set.iterator();
         response.questions_id = new HashSet<>();
         while (iterator.hasNext()) {
-            response.questions_id.add(iterator.next().getId());
+            response.questions_id.add(iterator.next().getQuestion().getId());
         }
         response.start_date = attempt.getStart_date();
         response.end_date = attempt.getEnd_date();
+        response.user_id = attempt.getUser().getId();
         return response;
     }
 
     public AttemptResponse() {
+    }
+
+    public Long getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public Long getId() {

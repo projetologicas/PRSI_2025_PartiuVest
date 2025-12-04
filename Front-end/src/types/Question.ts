@@ -4,7 +4,11 @@ export interface Question {
     id : number;
     title : string;
     image_url : string;
-    number : number;
+    enum_a : string;
+    enum_b : string;
+    enum_c : string;
+    enum_d : string;
+    enum_e : string;
     answer : string;
-    area : Area;
+    number : number;
 }

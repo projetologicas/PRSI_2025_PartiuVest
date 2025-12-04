@@ -1,13 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../common/context/UserCotext.tsx";
+import { refreshUserContext, UserContext } from "../common/context/UserCotext.tsx";
 import { SystemContext } from "../common/context/SystemContext.tsx";
-import axios from "axios";
+import { getTokenCookie, removeTokenCookie, setTokenCookie } from "../services/Cookies.ts"
 
 export default function PerfilPage() {
     const userContext = useContext(UserContext);
     const systemContext = useContext(SystemContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (userContext.name === "") {
+            refreshUserContext(userContext);
+        }
+    }, []);
 
     const handleLogout = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -15,8 +21,7 @@ export default function PerfilPage() {
         systemContext.setLoading(true);
 
         try {
-            const resp = await axios.post("http://localhost:8080/auth/logout");
-            console.log("Conta criada:", resp.data);
+            removeTokenCookie();
             navigate('/');
         } catch (err: any) {
             console.log(err);
@@ -53,7 +58,7 @@ export default function PerfilPage() {
                         <p>Exercícios feitos: {userContext.exerciciosFeitos}</p>
                         <p>Streak: {userContext.streak}</p>
                         <p>Rank: {userContext.rank}</p>
-                        <p>Lvl: {userContext.xp}</p>
+                        <p>Xp: {userContext.xp}</p>
                     </div>
                 </div>
 

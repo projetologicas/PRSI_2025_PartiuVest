@@ -9,6 +9,8 @@ import QuestionPage from "./pages/QuestionPage";
 import Dados from "./pages/Dados";
 import NotFound from "./pages/NotFound";
 import { SystemProvider } from "./common/context/SystemContext";
+import Vestibulares from "./pages/Vest";
+import QuestionBookDetails from "./pages/QuestionBookDetails";
 
 function Router() {
     return (
@@ -25,11 +27,10 @@ function Router() {
 
                             <Route path="/profile" element={<Dados />}/>
 
-                            <Route path="/question_book">
-                                <Route path="/question_book/attempt">
-                                    <Route path="/question_book/attempt/question" element={<QuestionPage />}/>
-                                </Route>
-                            </Route>
+                            <Route path="/question_book" element={<Vestibulares />}/>
+                            <Route path="/question_book/details/:book_id" element={<QuestionBookDetails />}/>
+                            <Route path="/question_book/:book_id/attempt"/>
+                            <Route path="/question_book/:book_id/attempt/:question_id" element={<QuestionPage />}/>
                         </Route>
 
                         <Route path="*" element={<NotFound />} />

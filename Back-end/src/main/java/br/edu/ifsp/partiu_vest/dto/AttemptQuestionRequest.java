@@ -6,18 +6,28 @@ import br.edu.ifsp.partiu_vest.model.User;
 
 public class AttemptQuestionRequest {
     private Long id;
+    private Long question_id;
     private Long attempt_id;
     private User user;
     private String user_answer;
 
-    public AttemptQuestionRequest(Long id, Long attempt_id, User user, String user_answer) {
+    public AttemptQuestionRequest(Long id, Long question_id, Long attempt_id, User user, String user_answer) {
         this.id = id;
+        this.question_id = question_id;
         this.attempt_id = attempt_id;
         this.user = user;
         this.user_answer = user_answer;
     }
 
     public AttemptQuestionRequest() {
+    }
+
+    public Long getQuestion_id() {
+        return question_id;
+    }
+
+    public void setQuestion_id(Long question_id) {
+        this.question_id = question_id;
     }
 
     public Long getId() {

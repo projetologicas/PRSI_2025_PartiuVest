@@ -9,4 +9,5 @@ export interface User {
     xp : number;
     exerciciosFeitos: number;
     rank: string;
+    role: string;
 }

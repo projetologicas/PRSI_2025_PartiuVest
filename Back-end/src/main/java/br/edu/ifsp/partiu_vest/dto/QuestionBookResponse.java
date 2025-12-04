@@ -4,6 +4,8 @@ import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class QuestionBookResponse {
@@ -11,7 +13,7 @@ public class QuestionBookResponse {
     private Date creation_date;
     private String model;
     boolean r_generated;
-    private Set<Question> questions;
+    private Set<Long> questions_id;
 
     public static QuestionBookResponse from(QuestionBook questionBook) {
         var response = new QuestionBookResponse();
@@ -19,7 +21,12 @@ public class QuestionBookResponse {
         response.creation_date = questionBook.getCreation_date();
         response.model = questionBook.getModel();
         response.r_generated = questionBook.isR_generated();
-        response.questions = questionBook.getQuestions();
+        HashSet<Question> questions = new HashSet<>(questionBook.getQuestions());
+        Iterator<Question> iterator = questions.iterator();
+        response.questions_id = new HashSet<>();
+        while (iterator.hasNext()) {
+            response.questions_id.add(iterator.next().getId());
+        }
         return response;
     }
 
@@ -28,7 +35,11 @@ public class QuestionBookResponse {
         this.creation_date = creation_date;
         this.model = model;
         this.r_generated = r_generated;
-        this.questions = questions;
+        Iterator<Question> iterator = questions.iterator();
+        this.questions_id = new HashSet<>();
+        while (iterator.hasNext()) {
+            this.questions_id.add(iterator.next().getId());
+        }
     }
 
     public QuestionBookResponse() {
@@ -66,11 +77,11 @@ public class QuestionBookResponse {
         this.r_generated = r_generated;
     }
 
-    public Set<Question> getQuestions() {
-        return questions;
+    public Set<Long> getQuestions_id() {
+        return questions_id;
     }
 
-    public void setQuestions(Set<Question> questions) {
-        this.questions = questions;
+    public void setQuestions_id(Set<Long> questions_id) {
+        this.questions_id = questions_id;
     }
 }

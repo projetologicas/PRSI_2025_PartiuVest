@@ -143,4 +143,20 @@ public class User {
     private void resetStreak(){
         this.streak = 0;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", sign_date=" + sign_date +
+                ", streak=" + streak +
+                ", points=" + points +
+                ", xp=" + xp +
+                ", role=" + role +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

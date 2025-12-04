@@ -14,6 +14,10 @@ public interface AttemptRepository extends JpaRepository<Attempt, Long> {
             "WHERE a.question_book_id = :question_book_id",
             nativeQuery = true)
     public List<Attempt> findByQuestionBook(@Param("number") Long question_book_id);
+    @Query(value = "SELECT * FROM attempt " +
+            "WHERE user_id = :user_id AND question_book_id = :question_book_id",
+            nativeQuery = true)
+    public List<Attempt> findByQuestionBookUser(@Param("question_book_id") Long question_book_id, @Param("user_id") Long user_id);
 
 }
 

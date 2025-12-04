@@ -147,4 +147,21 @@ public class Question {
     public void setQuestion_book(QuestionBook question_book) {
         this.question_book = question_book;
     }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", image_desc='" + image_desc + '\'' +
+                ", enum_a='" + enum_a + '\'' +
+                ", enum_b='" + enum_b + '\'' +
+                ", enum_c='" + enum_c + '\'' +
+                ", enum_d='" + enum_d + '\'' +
+                ", enum_e='" + enum_e + '\'' +
+                ", number=" + number +
+                ", answer='" + answer + '\'' +
+                ", question_book=" + question_book.getId() +
+                '}';
+    }
 }

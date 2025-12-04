@@ -1,8 +1,6 @@
 package br.edu.ifsp.partiu_vest.service;
 
-import br.edu.ifsp.partiu_vest.dto.AuthRequest;
-import br.edu.ifsp.partiu_vest.dto.RegisterRequest;
-import br.edu.ifsp.partiu_vest.dto.UserResponse;
+import br.edu.ifsp.partiu_vest.dto.*;
 import br.edu.ifsp.partiu_vest.exceptions.EmailAlreadyUsedException;
 import br.edu.ifsp.partiu_vest.exceptions.InvalidCredentialsException;
 import br.edu.ifsp.partiu_vest.exceptions.UserNotFoundException;
@@ -60,6 +58,11 @@ public class UserService {
             throw new InvalidCredentialsException("Credenciais inválidas");
         }
         return user;
+    }
+
+    public UserPublicDataResponse getPublicUserData(UserDataRequest dto) {
+        User user = repository.findById(dto.getId()).get();
+        return UserPublicDataResponse.from(user);
     }
 
 }

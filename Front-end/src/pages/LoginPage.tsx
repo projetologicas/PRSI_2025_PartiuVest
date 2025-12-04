@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { setTokenCookie, getTokenCookie, removeTokenCookie } from "../services/Cookies.ts"
 import cerebro from "../assets/brain.png";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { UserContext } from "../common/context/UserCotext.tsx";
+import { UserContext, refreshUserContext } from "../common/context/UserCotext.tsx";
 import { SystemContext } from "../common/context/SystemContext.tsx";
 
 type LoginForm = {
@@ -16,6 +16,12 @@ export default function LoginPage() {
   const systemContext = useContext(SystemContext);
   const navigate = useNavigate();
   const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
+
+  useEffect(() => {
+    if (getTokenCookie() !== undefined) {
+      navigate('/home');
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,12 +37,7 @@ export default function LoginPage() {
           console.log('Login success', resp.data);
           setTokenCookie(resp.data.token, 1);
 
-          const userResp = await axios.get("http://localhost:8080/api/data", {
-            headers: {
-                'Authorization': `Bearer ${getTokenCookie()}`
-            }
-          });
-          userContext.setName(userResp.data.name);
+          refreshUserContext(userContext);
           
           navigate('/home');
       } catch (err: any) {

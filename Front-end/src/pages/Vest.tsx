@@ -1,61 +1,90 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-interface VestibularDTO {
-    id: number;
-    nome: string;
-    nota: number;
-}
+import type { QuestionBook } from "../types/QuestionBook";
+import { getTokenCookie } from "../services/Cookies";
+import { SystemContext } from "../common/context/SystemContext";
+import HomeNavBar from "../components/HomeNavBar";
 
 export default function Vestibulares() {
-    const [lista, setLista] = useState<VestibularDTO[]>([]);
+    const [lista, setLista] = useState<QuestionBook[]>([]);
     const navigate = useNavigate();
+    const systemContext = useContext(SystemContext);
 
     useEffect(() => {
-        axios.get("/api/vestibulares") // ajuste a rota conforme seu backend
-            .then((res) => setLista(res.data))
-            .catch((err) => console.error(err));
+        const fetchData = async () => { 
+            try {
+                systemContext.setLoading(true);
+                systemContext.setError(null);
+                await axios.get("http://localhost:8080/question_book/", {
+                    headers: {
+                        'Authorization': `Bearer ${getTokenCookie()}`
+                    }
+                }).then(res => {
+                    console.log(res)
+                    setLista(res.data);
+                });
+            } catch (err : any) {
+                console.error(err);
+                systemContext.setError(err?.response?.data?.message ?? 'Erro ao adquirir livros de questões');
+            } finally {
+                systemContext.setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
     return (
         <div className="min-h-screen bg-[#1f1b1d] text-black pb-10">
 
-            {/* Navbar */}
-            <div className="flex items-center bg-[#d9d9d9] px-6 py-4 justify-between shadow">
-                <div className="flex items-center gap-10">
-                    <div className="bg-[#222] px-5 py-1 rounded-full shadow-md">
-                        <h1 className="text-[#33e6c9] text-3xl font-bold">PartiuVest</h1>
-                    </div>
-
-                    <nav className="flex gap-10 text-2xl font-semibold">
-                        <a className="hover:opacity-70 cursor-pointer">Home</a>
-                        <a className="hover:opacity-70 cursor-pointer border-b-4 border-black pb-1">Vestibulares</a>
-                        <a className="hover:opacity-70 cursor-pointer">Loja</a>
-                    </nav>
-                </div>
-
-                {/* Ícone do usuário */}
-                <div className="w-14 h-14 rounded-full bg-black"></div>
-            </div>
+            <HomeNavBar/>
 
             {/* Conteúdo */}
             <div className="bg-[#dcdcdc] mx-4 mt-6 rounded-lg shadow-lg px-10 py-10">
-
                 <div className="text-3xl font-bold space-y-6">
 
-                    {lista.map((vest) => (
-                        <p
-                            key={vest.id}
-                            className="cursor-pointer hover:opacity-70"
-                            onClick={() => navigate(`/vestibular/${vest.id}`)}
-                        >
-                            + {vest.nome} – Nota: {vest.nota ?? "xxxx"}
-                        </p>
-                    ))}
+                    {lista.map((vest) => {
+                        const creationDate = new Date(vest.creation_date).toLocaleDateString("pt-BR");
+
+                        const isCompleted = false;
+
+                        return (
+                            <div
+                                key={vest.id}
+                                className="cursor-pointer hover:opacity-75 p-4 bg-white rounded-lg shadow flex flex-col gap-2 transition"
+                                onClick={() => navigate(`/question_book/details/${vest.id}`)}
+                            >
+                                {/* Cabeçalho: título + badges */}
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xl font-semibold">{vest.model}</span>
+
+                                    {/* Indicador: Gerado aleatoriamente */}
+                                    {vest.r_generated && (
+                                        <span className="text-sm bg-blue-500 text-white px-2 py-1 rounded-full">
+                                            Aleatório
+                                        </span>
+                                    )}
+
+                                    {/* Indicador: Concluído */}
+                                    {isCompleted && (
+                                        <span className="text-sm bg-green-600 text-white px-2 py-1 rounded-full">
+                                            Concluído
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Informações */}
+                                <div className="text-base text-gray-700 flex flex-col gap-1">
+                                    <span>Questões: {vest.questions_id.length}</span>
+                                    <span>Criado em: {creationDate}</span>
+                                </div>
+
+                            </div>
+                        );
+                    })}
 
                 </div>
-
             </div>
         </div>
     );

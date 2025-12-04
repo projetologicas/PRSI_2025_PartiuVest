@@ -1,9 +1,8 @@
-import type { Attempt } from "./Attempt";
-
 export interface AttemptQuestion {
     id: number;
-    attempt : Attempt;
+    attempt_id : number;
+    question_id : number;
     user_answer: string;
-    is_correct: boolean;
+    right_answer: string;
     date: Date;
 }
