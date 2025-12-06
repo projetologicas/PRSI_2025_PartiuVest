@@ -1,6 +1,5 @@
 package br.edu.ifsp.partiu_vest.service;
 
-import br.edu.ifsp.partiu_vest.dto.QuestionBookRequest;
 import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
 import br.edu.ifsp.partiu_vest.repository.QuestionBookRepository;
@@ -24,14 +23,18 @@ public class QuestionBookService {
         this.question_repository = question_repository;
     }
 
-    public List<Question> getQuestionsFromQuestionBook(QuestionBookRequest dto) {
-        List<Question> question_list = question_repository.findQuestionsByQuestionBookId(dto.getQuestionBookId());
+    public List<Question> getQuestionsFromQuestionBook(Long question_book_id) {
+        List<Question> question_list = question_repository.findQuestionsByQuestionBookId(question_book_id);
         return question_list;
     }
 
-    public QuestionBook getQuestionBook(QuestionBookRequest dto) {
-        Optional<QuestionBook> questionBook = question_book_repository.findById(dto.getQuestionBookId());
+    public QuestionBook getQuestionBook(Long question_book_id) {
+        Optional<QuestionBook> questionBook = question_book_repository.findById(question_book_id);
         return questionBook.get();
+    }
+
+    public Set<QuestionBook> getAllQuestionBook() {
+        return new HashSet<>(question_book_repository.findAll());
     }
     @Transactional
     public QuestionBook createRandomExam(){

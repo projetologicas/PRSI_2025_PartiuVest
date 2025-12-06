@@ -1,8 +1,8 @@
-export type Model = 'ENEM' | 'FUVEST' | 'UNESP' | 'OUTRO';
-
 export interface QuestionBook {
     id : number;
     creation_date : Date;
-    model: Model;
+    model: string;
+    user_id : number;
     r_generated : boolean;
+    questions_id : number[];
 }

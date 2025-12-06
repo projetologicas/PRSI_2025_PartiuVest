@@ -68,4 +68,19 @@ public class Comment {
     public void setDate() {
         this.date = new Date();
     }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", question=" + question.getId() +
+                ", user=" + user.getId() +
+                ", comment='" + comment + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

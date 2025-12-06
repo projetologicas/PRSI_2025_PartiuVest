@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 
 type RegisterForm = {
     email: string;
@@ -8,6 +9,7 @@ type RegisterForm = {
 };
 
 export default function RegisterPage() {
+    const navigate = useNavigate();
     const [form, setForm] = useState<RegisterForm>({
         email: "",
         password: "",
@@ -30,6 +32,7 @@ export default function RegisterPage() {
             console.log(form)
             const resp = await axios.post("http://localhost:8080/auth/register", form);
             console.log("Conta criada:", resp.data);
+            navigate('/');
         } catch (err: any) {
             console.log(err);
             setError(err?.response?.data?.message ?? "Erro ao cadastrar");
@@ -124,7 +127,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-64 py-4 text-3xl font-extrabold rounded-full shadow-xl active:translate-y-0.5"
+                            className="w-64 py-4 text-3xl font-extrabold rounded-full shadow-xl active:translate-y-0.5 cursor-pointer"
                             style={{
                                 background: "linear-gradient(90deg,#14e7b1,#0dd6b6)",
                                 fontFamily: "monospace",
@@ -132,6 +135,19 @@ export default function RegisterPage() {
                         >
                             {loading ? "Cadastrando..." : "Cadastrar"}
                         </button>
+                        <div className="pl-5"></div>
+                        <Link to="/">
+                            <button
+                                type="button"
+                                className="w-64 py-4 text-3xl font-extrabold rounded-full shadow-xl active:translate-y-0.5 cursor-pointer"
+                                style={{
+                                    background: "linear-gradient(90deg,#14e7b1,#0dd6b6)",
+                                    fontFamily: "monospace",
+                                }}
+                            >
+                                Voltar
+                            </button>
+                        </Link>
                     </div>
                 </form>
             </div>

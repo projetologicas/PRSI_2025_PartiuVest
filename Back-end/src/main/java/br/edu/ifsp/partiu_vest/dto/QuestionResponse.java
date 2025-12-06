@@ -15,6 +15,7 @@ public class QuestionResponse {
     private String enum_e;
     private String answer;
     private int number;
+    private Long original_question_book_id;
 
     public static QuestionResponse from(Question question) {
         var response = new QuestionResponse();
@@ -28,10 +29,11 @@ public class QuestionResponse {
         response.enum_e = question.getEnum_e();
         response.answer = question.getAnswer();
         response.number = question.getNumber();
+        response.original_question_book_id = question.getQuestion_book().getId();
         return response;
     }
 
-    public QuestionResponse(Long id, String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, String answer, int number) {
+    public QuestionResponse(Long id, String title, String image_desc, String enum_a, String enum_b, String enum_c, String enum_d, String enum_e, String answer, int number, Long original_question_book_id) {
         this.id = id;
         this.title = title;
         this.image_desc = image_desc;
@@ -42,9 +44,18 @@ public class QuestionResponse {
         this.enum_e = enum_e;
         this.answer = answer;
         this.number = number;
+        this.original_question_book_id = original_question_book_id;
     }
 
     public QuestionResponse() {
+    }
+
+    public Long getOriginal_question_book_id() {
+        return original_question_book_id;
+    }
+
+    public void setOriginal_question_book_id(Long original_question_book_id) {
+        this.original_question_book_id = original_question_book_id;
     }
 
     public Long getId() {

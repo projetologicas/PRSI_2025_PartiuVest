@@ -22,7 +22,7 @@ public class Attempt {
     @ManyToMany
     @JoinTable(name = "attempt_question",
             joinColumns = @JoinColumn(name = "attempt_id"),
-            inverseJoinColumns = @JoinColumn(name = "question_id"))
+            inverseJoinColumns = @JoinColumn(name = "id"))
     private Set<AttemptQuestion> questions;
 
     @Column
@@ -91,7 +91,6 @@ public class Attempt {
                 "id=" + id +
                 ", question_book=" + question_book.getId() +
                 ", user=" + user.getId() +
-                ", questions=" + questions +
                 ", start_date=" + start_date +
                 ", end_date=" + end_date +
                 '}';

@@ -2,6 +2,7 @@ package br.edu.ifsp.partiu_vest;
 
 import br.edu.ifsp.partiu_vest.service.JsonlProcessorService;
 import br.edu.ifsp.partiu_vest.service.QuestionBookService;
+import br.edu.ifsp.partiu_vest.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +19,7 @@ public class PartiuVestApplication {
     public CommandLineRunner runRandomGenerationTest(QuestionBookService service){
         return args -> {
             System.out.println("Iniciando teste de Geração Aleatória");
-            // service.createRandomExam();
+            //service.createRandomExam();
             System.out.println("Teste de Geração Aleatória concluído.");
         };
     }
@@ -33,6 +34,13 @@ public class PartiuVestApplication {
             //service.importQuestions(path);
 
             System.out.println("Importação concluida, desligando.");
+        };
+    }
+
+    @Bean
+    public CommandLineRunner createAdminUser(UserService service){
+        return args -> {
+            service.
         };
     }
 

@@ -6,7 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "question")
-public class Question {
+public class Question implements Comparable<Question> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -146,5 +146,19 @@ public class Question {
 
     public void setQuestion_book(QuestionBook question_book) {
         this.question_book = question_book;
+    }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", number=" + number +
+                ", question_book=" + question_book.getId() +
+                '}';
+    }
+
+    @Override
+    public int compareTo(Question o) {
+        return Long.compare(this.id, o.id);
     }
 }

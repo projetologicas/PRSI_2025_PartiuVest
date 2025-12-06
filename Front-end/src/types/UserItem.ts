@@ -1,8 +1,5 @@
-import type { Item } from "./Item";
-import type { User } from "./User";
-
 export interface UserItem {
-    item : Item;
-    user : User;
+    item_id : number;
+    user_id : number;
     acquisition_date : Date;
 }
