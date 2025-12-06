@@ -11,4 +11,6 @@ export interface Question {
     enum_e : string;
     answer : string;
     number : number;
+    original_question_book_id: number;
+    original_question_book_model: string;
 }

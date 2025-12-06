@@ -11,9 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/question")
@@ -31,15 +29,16 @@ public class QuestionController {
     }
 
     @GetMapping("/question_book")
-    public ResponseEntity<Set<QuestionResponse>> getQuestionsByQuestionBook(@RequestParam(required = true) Long question_book_id) {
-        Set<Question> set = new HashSet<>(question_service.getQuestionsByQuestionBook(question_book_id));
+    public ResponseEntity<List<QuestionResponse>> getQuestionsByQuestionBook(@RequestParam(required = true) Long question_book_id) {
+        List<Question> set = new LinkedList<>(question_service.getQuestionsByQuestionBook(question_book_id));
         Iterator<Question> iterator = set.iterator();
-        HashSet<QuestionResponse> response = new HashSet<>();
+        List<QuestionResponse> response = new LinkedList<>();
 
         while (iterator.hasNext()) {
             QuestionResponse ar = QuestionResponse.from(iterator.next());
             response.add(ar);
         }
+        response.sort(Comparator.comparing(QuestionResponse::getId));
         return ResponseEntity.ok(response);
     }
 }

@@ -2,6 +2,7 @@ package br.edu.ifsp.partiu_vest;
 
 import br.edu.ifsp.partiu_vest.service.JsonlProcessorService;
 import br.edu.ifsp.partiu_vest.service.QuestionBookService;
+import br.edu.ifsp.partiu_vest.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,9 +31,16 @@ public class PartiuVestApplication {
             // mudar para 2022, 2023 e 2024 para subir os 3 anos separadamente no bd.
             String path = "provas/2023.jsonl";
 
-            // service.importQuestions(path);
+            //service.importQuestions(path);
 
             System.out.println("Importação concluida, desligando.");
+        };
+    }
+
+    @Bean
+    public CommandLineRunner createAdminUser(UserService service){
+        return args -> {
+            service.
         };
     }
 

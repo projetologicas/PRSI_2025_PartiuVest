@@ -15,8 +15,9 @@ public class AttemptQuestionResponse {
     private String right_answer;
     private LocalDate date;
 
-    public AttemptQuestionResponse(Long question, Long attempt, String user_answer, String right_answer) {
-        this.question_id = question;
+    public AttemptQuestionResponse(Long id, Long question_id, Long attempt, String user_answer, String right_answer) {
+        this.id = id;
+        this.question_id = question_id;
         this.attempt_id = attempt;
         this.user_answer = user_answer;
         this.right_answer = right_answer;
@@ -40,6 +41,15 @@ public class AttemptQuestionResponse {
     public LocalDate getDate() {
         return date;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setDate(LocalDate date) {
         this.date = date;
     }

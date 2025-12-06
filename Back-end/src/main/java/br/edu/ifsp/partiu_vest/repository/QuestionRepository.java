@@ -1,6 +1,7 @@
 package br.edu.ifsp.partiu_vest.repository;
 
 import br.edu.ifsp.partiu_vest.model.Question;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query(value = "SELECT q.* FROM question q " +
             "JOIN book_question bq ON q.id = bq.question_id " +
-            "WHERE bq.question_book_id = :questionBookId;",
+            "WHERE bq.question_book_id = :questionBookId ORDER BY id;",
             nativeQuery = true)
     public List<Question> findQuestionsByQuestionBookId(@Param("questionBookId") long questionBookId);
     @Query(value = "SELECT q.* FROM question q " +

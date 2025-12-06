@@ -65,4 +65,9 @@ public class UserService {
         return UserPublicDataResponse.from(user);
     }
 
+    public void createAdminUser() {
+        User user = new User("admin@admin.com", "admin", "admin");
+        repository.save(user);
+    }
+
 }

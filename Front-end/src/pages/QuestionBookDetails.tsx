@@ -8,10 +8,12 @@ import type { Attempt } from "../types/Attempt";
 import type { Question } from "../types/Question";
 import type { AttemptQuestion } from "../types/AttemptQuestion";
 import HomeNavBar from "../components/HomeNavBar";
+import { AttemptContext } from "../common/context/AttemptContext";
 
 export default function QuestionBookDetails() {
     const navigate = useNavigate();
     const systemContext = useContext(SystemContext);
+    const attemptContext = useContext(AttemptContext);
 
     const [question_book, setQuestionBook] = useState<QuestionBook>();
     const [attempts, setAttempts] = useState<Attempt[]>([]);
@@ -29,6 +31,8 @@ export default function QuestionBookDetails() {
                         'Authorization': `Bearer ${getTokenCookie()}`
                     }
                 }).then(res => {
+                    console.log("question_book");
+                    console.log(res.data);
                     setQuestionBook(res.data);
                 });
                 const attempts_response = await axios.get(`http://localhost:8080/attempt/question_book_user?question_book_id=${book_id}`, {
@@ -36,6 +40,8 @@ export default function QuestionBookDetails() {
                         'Authorization': `Bearer ${getTokenCookie()}`
                     }
                 }).then(res => {
+                    console.log("attempts");
+                    console.log(res.data);
                     setAttempts([...res.data]);
                 });
                 const questions_response = await axios.get(`http://localhost:8080/question/question_book?question_book_id=${book_id}`, {
@@ -43,14 +49,42 @@ export default function QuestionBookDetails() {
                         'Authorization': `Bearer ${getTokenCookie()}`
                     }
                 }).then(res => {
+                    console.log("questions");
+                    console.log(res.data);
                     setQuestions([...res.data]);
+                    var original_book_ids = [...new Set(res.data.map((q: Question) => q.original_question_book_id))];
+                    console.log(original_book_ids);
+                    original_book_ids.forEach(async (id) => {
+                        const original_book_response = await axios.get(`http://localhost:8080/question_book/id?question_book_id=${id}`, {
+                            headers: {
+                                'Authorization': `Bearer ${getTokenCookie()}`
+                            }
+                        }).then(res => {
+                            console.log("original_book");
+                            console.log(res.data);
+                            setQuestions(prevQuestions => {
+                                return prevQuestions.map(q => {
+                                    if (q.original_question_book_id === id) {
+                                        return {
+                                            ...q,
+                                            original_question_book_model: res.data.model,
+                                        };
+                                    }
+                                    return q;
+                                });
+                            });
+                        });
+                    });
                 });
                 attempts.map(async (attempt) => {
+                    console.log("Fetching attempt questions for attempt id:", attempt.id);
                     const attempt_questions_response = await axios.get(`http://localhost:8080/attempt/attempted_questions?attempt_book_id=${attempt.id}`, {
                         headers: {
                             'Authorization': `Bearer ${getTokenCookie()}`
                         }
                     }).then(res => {
+                        console.log("question_attempts");
+                        console.log(res.data);
                         setAttempts(prevAttempts => {
                             return prevAttempts.map(a => {
                                 if (a.id === attempt.id) {
@@ -86,6 +120,31 @@ export default function QuestionBookDetails() {
             year: "numeric"
         });
     };
+
+    const handleNewAttempt = async () => {
+        const attempt_response = await axios.post(`http://localhost:8080/attempt/new`, {
+            question_book_id: question_book?.id
+        }, {
+            headers: {
+                'Authorization': `Bearer ${getTokenCookie()}`
+            }
+        }).then(res => {
+            
+            console.log(res.data);
+            attemptContext.setAttempt(res.data);
+            localStorage.setItem("current_attempt_id", res.data.id.toString());
+            localStorage.setItem("attempt_questions_index", "1");
+            navigate(`/question_book/attempt/${res.data.id}/${res.data.questions_id[0]}`);
+        });
+    }
+
+    const handleContinueAttempt = async (attempt : Attempt) => {
+        attemptContext.setAttempt(attempt);
+        console.log(attempt);
+        localStorage.setItem("current_attempt_id", attempt.id.toString());
+        localStorage.setItem("attempt_questions_index", "1");
+        navigate(`/question_book/attempt/${attempt.id}/${attempt.questions_id[0]}`);
+    }
     
     return (
         <div className="min-h-screen bg-[#1e1b1c] text-white select-none">
@@ -123,7 +182,7 @@ export default function QuestionBookDetails() {
                             <h2 className="text-2xl font-bold">Tentativas</h2>
 
                             <button
-                                onClick={() => navigate(`/question_book/${question_book?.id}/new_attempt`)}
+                                onClick={handleNewAttempt}
                                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-4 py-2 rounded-lg"
                             >
                                 Nova tentativa
@@ -167,17 +226,18 @@ export default function QuestionBookDetails() {
                                             <p>
                                                 <strong>Término:</strong> {formatDate(attempt.end_date)}
                                             </p>
-                                            {/*
-                                            <p>
-                                                <strong>Progresso:</strong>{" "}
-                                                {attempt.answered}/{totalQuestions}
-                                            </p>
-                                            */}
+                                            
                                             {isAttemptComplete && (
                                                 <p>
                                                     <strong>Acertos:</strong> {attempt.correct_answers} de {attempt.total_questions}
                                                 </p>
                                             )}
+                                            <button
+                                                onClick={() => {handleContinueAttempt(attempt)}}
+                                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg"
+                                            >
+                                                Continuar tentativa
+                                            </button>
                                         </div>
                                     </div>
                                 );
@@ -197,7 +257,7 @@ export default function QuestionBookDetails() {
                                     className="p-3 border rounded-lg bg-gray-50"
                                 >
                                     <p className="font-semibold text-lg">
-                                        #{q.number} – {question_book?.model}
+                                        #{q.number} – {q.original_question_book_model}
                                     </p>
                                     {/*
                                     <p className="text-gray-600 text-sm">

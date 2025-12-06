@@ -35,6 +35,17 @@ export default function Vestibulares() {
         fetchData();
     }, []);
 
+    const handleNewQuestionBook = async () => {
+        await axios.post("http://localhost:8080/question_book/new", {},{
+            headers: {
+                'Authorization': `Bearer ${getTokenCookie()}`
+            }
+        }).then(res => {
+            console.log(res)
+            setLista([...lista, res.data]);
+        });
+    }
+
     return (
         <div className="min-h-screen bg-[#1f1b1d] text-black pb-10">
 
@@ -43,6 +54,13 @@ export default function Vestibulares() {
             {/* Conteúdo */}
             <div className="bg-[#dcdcdc] mx-4 mt-6 rounded-lg shadow-lg px-10 py-10">
                 <div className="text-3xl font-bold space-y-6">
+
+                    <button
+                        onClick={handleNewQuestionBook}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-4 py-2 rounded-lg text-lg"
+                    >
+                        Gerar Caderno de Questões Aleatório
+                    </button>
 
                     {lista.map((vest) => {
                         const creationDate = new Date(vest.creation_date).toLocaleDateString("pt-BR");

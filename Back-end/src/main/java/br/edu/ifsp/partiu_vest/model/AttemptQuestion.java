@@ -2,11 +2,12 @@ package br.edu.ifsp.partiu_vest.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Date;
 
 @Entity
 @Table(name = "attempt_question")
-public class AttemptQuestion {
+public class AttemptQuestion implements Comparable<AttemptQuestion> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -84,5 +85,10 @@ public class AttemptQuestion {
                 ", user_answer='" + user_answer + '\'' +
                 ", date=" + date +
                 '}';
+    }
+
+    @Override
+    public int compareTo(AttemptQuestion o) {
+        return Long.compare(this.id, o.id);
     }
 }

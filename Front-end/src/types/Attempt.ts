@@ -6,7 +6,7 @@ export interface Attempt {
     user_id : number;
     start_date : Date;
     end_date : Date;
-    questions : AttemptQuestion[];
+    questions_id : number[];
     correct_answers : number;
     total_questions : number;
 }
