@@ -155,7 +155,7 @@ export default function QuestionBookDetails() {
                 <div className="bg-white shadow-md rounded-lg p-7 mb-10">
 
                     <div className="flex items-center gap-4 mb-4">
-                        <h1 className="text-4xl font-bold">{question_book != null ? question_book.model : ""}</h1>
+                        <h1 className="text-4xl font-bold text-black">{question_book != null ? question_book.model : ""}</h1>
 
                         {question_book != null ? question_book.r_generated : false && (
                             <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
@@ -208,11 +208,11 @@ export default function QuestionBookDetails() {
                                             </span>
 
                                             {isAttemptComplete ? (
-                                                <span className="bg-green-600 text-white px-2 py-1 rounded-full text-xs">
+                                                <span className="bg-green-600 text-black px-2 py-1 rounded-full text-xs">
                                                     Finalizada
                                                 </span>
                                             ) : (
-                                                <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">
+                                                <span className="bg-blue-500 text-black px-2 py-1 rounded-full text-xs">
                                                     Em andamento
                                                 </span>
                                             )}
@@ -234,7 +234,7 @@ export default function QuestionBookDetails() {
                                             )}
                                             <button
                                                 onClick={() => {handleContinueAttempt(attempt)}}
-                                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg"
+                                                className="bg-blue-500 hover:bg-blue-600 text-black font-semibold px-4 py-2 rounded-lg"
                                             >
                                                 Continuar tentativa
                                             </button>
@@ -248,7 +248,7 @@ export default function QuestionBookDetails() {
 
                     {/* COLUNA DIREITA – QUESTÕES */}
                     <div className="bg-white shadow-md rounded-lg p-6">
-                        <h2 className="text-2xl font-bold mb-5">Questões do caderno</h2>
+                        <h2 className="text-2xl font-bold mb-5 text-black">Questões do caderno</h2>
 
                         <div className="space-y-3">
                             {questions.map((q) => (
@@ -256,7 +256,7 @@ export default function QuestionBookDetails() {
                                     key={q.id}
                                     className="p-3 border rounded-lg bg-gray-50"
                                 >
-                                    <p className="font-semibold text-lg">
+                                    <p className="font-semibold text-lg text-black">
                                         #{q.number} – {q.original_question_book_model}
                                     </p>
                                     {/*

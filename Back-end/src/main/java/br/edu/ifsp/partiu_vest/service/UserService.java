@@ -66,7 +66,17 @@ public class UserService {
     }
 
     public void createAdminUser() {
-        User user = new User("admin@admin.com", "admin", "admin");
+        User user = new User();
+        user.setName("admin");
+        user.setEmail("admin@admin.com");
+        user.setPassword(encoder.encode("admin"));
+        user.setRole(Role.ADMIN);
+        user.setEnabled(true);
+        user.setSign_date();
+        user.setPoints(0);
+        user.setXp(0);
+        user.setStreak();
+        var saved = repository.save(user);
         repository.save(user);
     }
 

@@ -29,9 +29,13 @@ public class PartiuVestApplication {
         return args -> {
             System.out.println("Iniciando testes de importação");
             // mudar para 2022, 2023 e 2024 para subir os 3 anos separadamente no bd.
-            String path = "provas/2023.jsonl";
+            String path22 = "provas/2022.jsonl";
+            String path23 = "provas/2023.jsonl";
+            String path24 = "provas/2024.jsonl";
 
-            //service.importQuestions(path);
+            service.importQuestions(path22);
+            service.importQuestions(path23);
+            service.importQuestions(path24);
 
             System.out.println("Importação concluida, desligando.");
         };
@@ -40,7 +44,7 @@ public class PartiuVestApplication {
     @Bean
     public CommandLineRunner createAdminUser(UserService service){
         return args -> {
-            service.
+            service.createAdminUser();
         };
     }
 
