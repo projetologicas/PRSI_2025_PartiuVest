@@ -9,6 +9,11 @@ import br.edu.ifsp.partiu_vest.model.enums.Role;
 import br.edu.ifsp.partiu_vest.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -80,4 +85,15 @@ public class UserService {
         repository.save(user);
     }
 
+    public Page<UserPublicDataResponse> getXpRanking(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repository.findAllByOrderByXpDesc(pageable)
+                .map(UserPublicDataResponse::from);
+    }
+
+    public Page<UserPublicDataResponse> getStreakRanking(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repository.findAllByOrderByStreakDesc(pageable)
+                .map(UserPublicDataResponse::from);
+    }
 }

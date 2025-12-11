@@ -5,11 +5,9 @@ import br.edu.ifsp.partiu_vest.dto.AttemptQuestionResponse;
 import br.edu.ifsp.partiu_vest.dto.AttemptRequest;
 import br.edu.ifsp.partiu_vest.dto.AttemptResponse;
 import br.edu.ifsp.partiu_vest.model.*;
-import br.edu.ifsp.partiu_vest.repository.AttemptQuestionRepository;
-import br.edu.ifsp.partiu_vest.repository.AttemptRepository;
-import br.edu.ifsp.partiu_vest.repository.QuestionBookRepository;
-import br.edu.ifsp.partiu_vest.repository.QuestionRepository;
+import br.edu.ifsp.partiu_vest.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -20,12 +18,18 @@ public class AttemptService {
     private final QuestionRepository question_repository;
     private final QuestionBookRepository question_book_repository;
     private final AttemptQuestionRepository attempt_question_repository;
+    private final UserRepository user_repository;
 
-    public AttemptService(AttemptRepository attemptRepository, QuestionRepository questionRepository, QuestionBookRepository questionBookRepository, AttemptQuestionRepository attemptQuestionRepository) {
-        attempt_repository = attemptRepository;
-        question_repository = questionRepository;
-        question_book_repository = questionBookRepository;
-        attempt_question_repository = attemptQuestionRepository;
+    public AttemptService(AttemptRepository attemptRepository,
+                          QuestionRepository questionRepository,
+                          QuestionBookRepository questionBookRepository,
+                          AttemptQuestionRepository attemptQuestionRepository,
+                          UserRepository userRepository) {
+        this.attempt_repository = attemptRepository;
+        this.question_repository = questionRepository;
+        this.question_book_repository = questionBookRepository;
+        this.attempt_question_repository = attemptQuestionRepository;
+        this.user_repository = userRepository;
     }
 
     public Attempt getAttemptById(AttemptRequest dto) {
@@ -39,6 +43,7 @@ public class AttemptService {
     public List<Attempt> getAttemptsByQuestionBook(AttemptRequest dto) {
         return attempt_repository.findByQuestionBook(dto.getQuestion_book_id());
     }
+
     public List<Attempt> getAttemptsByQuestionBookUser(Long question_book_id, User user) {
         return attempt_repository.findByQuestionBookUser(question_book_id, user.getId());
     }
@@ -92,5 +97,37 @@ public class AttemptService {
         System.out.println(response.getQuestions_id());
 
         return response;
+    }
+
+    @Transactional
+    public AttemptResponse finishAttempt(Long attemptId) {
+        Attempt attempt = attempt_repository.findById(attemptId)
+                .orElseThrow(() -> new RuntimeException("Tentativa não encontrada"));
+
+        User user = attempt.getUser();
+        int acertos = 0;
+
+        for (AttemptQuestion aq : attempt.getQuestions()) {
+            if (aq.getUser_answer() != null &&
+                    aq.getUser_answer().equalsIgnoreCase(aq.getQuestion().getAnswer())) {
+                acertos++;
+            }
+        }
+
+        int reward = acertos * 10;
+
+        user.setXp(user.getXp() + reward);
+        user.setPoints(user.getPoints() + reward);
+
+        if (reward > 0) {
+            user.setStreak();
+        }
+
+        attempt.setEnd_date(LocalDate.now());
+
+        attempt_repository.save(attempt);
+        user_repository.save(user);
+
+        return AttemptResponse.from(attempt);
     }
 }
