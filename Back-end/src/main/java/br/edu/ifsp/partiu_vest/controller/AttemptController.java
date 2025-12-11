@@ -86,4 +86,9 @@ public class AttemptController {
         System.out.println(dto.getQuestion_book_id());
         return ResponseEntity.ok(attempt_service.newAttempt(dto.getQuestion_book_id(), user));
     }
+
+    @PostMapping("/finish")
+    public ResponseEntity<AttemptResponse> finishAttempt(@RequestBody AttemptRequest dto) {
+        return ResponseEntity.ok(attempt_service.finishAttempt(dto.getId()));
+    }
 }

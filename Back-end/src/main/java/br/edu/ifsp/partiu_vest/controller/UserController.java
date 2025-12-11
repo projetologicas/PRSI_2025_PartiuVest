@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api")
@@ -32,6 +34,20 @@ public class UserController {
     @PostMapping("/data")
     public ResponseEntity<UserPublicDataResponse> getUserPublicData(@Valid @RequestBody UserDataRequest dto) {
         return ResponseEntity.ok(service.getPublicUserData(dto));
+    }
+
+    @GetMapping("/leaderboard/xp")
+    public ResponseEntity<Page<UserPublicDataResponse>> getXpLeaderboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.getXpRanking(page, size));
+    }
+
+    @GetMapping("/leaderboard/streak")
+    public ResponseEntity<Page<UserPublicDataResponse>> getStreakLeaderboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.getStreakRanking(page, size));
     }
 }
 
