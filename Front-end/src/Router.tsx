@@ -12,6 +12,7 @@ import { SystemProvider } from "./common/context/SystemContext";
 import Vestibulares from "./pages/Vest";
 import QuestionBookDetails from "./pages/QuestionBookDetails";
 import { AttemptProvider } from "./common/context/AttemptContext";
+import Leaderboard from "./pages/Leaderboard";
 
 function Router() {
     return (
@@ -25,7 +26,7 @@ function Router() {
                         <Route element={<ProtectedRoute />}>
                             <Route path="/home" element={<HomeAluno />} />
                             <Route path="/home_adm" element={<HomeADM />} />
-
+                            <Route path="/leaderboard" element={<Leaderboard />} />
                             <Route path="/profile" element={<Dados />}/>
 
                             <Route path="/question_book" element={<Vestibulares />}/>
