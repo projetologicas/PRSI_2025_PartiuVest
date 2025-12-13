@@ -58,12 +58,23 @@ public class AttemptService {
 
     public AttemptQuestionResponse commitQuestionAnswer(AttemptQuestionRequest dto) {
         Attempt attempt = attempt_repository.findById(dto.getAttempt_id()).get();
+
+        if (attempt.getEnd_date() != null) {
+            throw new RuntimeException("Esta tentativa já foi finalizada! Não é possível alterar respostas.");
+        }
+
         AttemptQuestion user_attempt_question = attempt_question_repository.findById(dto.getId()).get();
         user_attempt_question.setDate(LocalDate.now());
         user_attempt_question.setUser_answer(dto.getUser_answer());
         attempt_question_repository.save(user_attempt_question);
 
-        return new AttemptQuestionResponse(user_attempt_question.getId(), user_attempt_question.getQuestion().getId(), attempt.getId(), dto.getUser_answer(), user_attempt_question.getQuestion().getAnswer());
+        return new AttemptQuestionResponse(
+                user_attempt_question.getId(),
+                user_attempt_question.getQuestion().getId(),
+                attempt.getId(),
+                dto.getUser_answer(),
+                user_attempt_question.getQuestion().getAnswer()
+        );
     }
 
     public AttemptResponse newAttempt(Long question_book_id, User user) {
