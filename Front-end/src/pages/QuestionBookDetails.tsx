@@ -157,11 +157,7 @@ export default function QuestionBookDetails() {
                     <div className="flex items-center gap-4 mb-4">
                         <h1 className="text-4xl font-bold text-black">{question_book != null ? question_book.model : ""}</h1>
 
-                        {question_book != null ? question_book.r_generated : false && (
-                            <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-                                Aleatório
-                            </span>
-                        )}
+                        {question_book != null ? question_book.r_generated : false}
                     </div>
 
                     <div className="text-gray-700 text-lg space-y-1">

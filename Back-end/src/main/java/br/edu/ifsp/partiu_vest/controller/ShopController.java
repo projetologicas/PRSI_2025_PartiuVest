@@ -29,4 +29,10 @@ public class ShopController {
         User updatedUser = shopService.buyItem(user.getId(), itemId);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PostMapping("/equip/{itemId}")
+    public ResponseEntity<User> equipItem(@PathVariable Long itemId, @AuthenticationPrincipal User user) {
+        User updatedUser = shopService.equipItem(user.getId(), itemId);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

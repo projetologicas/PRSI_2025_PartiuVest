@@ -51,4 +51,25 @@ public class ShopService {
 
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User equipItem(Long userId, Long itemId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+
+        if (!user.getItems().contains(item)) {
+            throw new IllegalStateException("Você não possui este item para equipar.");
+        }
+
+        switch (item.getType()) {
+            case AVATAR -> user.setCurrentAvatarUrl(item.getImage_url());
+            case TITLE -> user.setCurrentTitle(item.getImage_url());
+            case THEME -> user.setCurrentTheme(item.getImage_url());
+        }
+
+        return userRepository.save(user);
+    }
 }

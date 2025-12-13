@@ -10,8 +10,16 @@ export const UserContext = createContext({
     setPoints: (points: number) => { },
     items: [] as ShopItem[],
     setItems: (items: ShopItem[]) => { },
+    currentAvatar: "",
+    setCurrentAvatar: (url: string) => { },
+    currentTitle: "",
+    setCurrentTitle: (title: string) => { },
+    currentTheme: "",
+    setCurrentTheme: (theme: string) => { },
     email: "",
     setEmail: (email: string) => { },
+    password: "",
+    setPassword: (password: string) => { },
     streak: 0,
     setStreak: (streak: number) => { },
     xp: 0,
@@ -24,14 +32,16 @@ export const UserContext = createContext({
     setSignDate: (sign_date: Date) => { },
     role: "",
     setRole: (role: string) => { },
-    password: "",
-    setPassword: (password: string) => { },
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [name, setName] = useState("");
     const [points, setPoints] = useState(0);
     const [items, setItems] = useState<ShopItem[]>([]);
+
+    const [currentAvatar, setCurrentAvatar] = useState("");
+    const [currentTitle, setCurrentTitle] = useState("");
+    const [currentTheme, setCurrentTheme] = useState("");
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -47,6 +57,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             name, setName,
             points, setPoints,
             items, setItems,
+            currentAvatar, setCurrentAvatar,
+            currentTitle, setCurrentTitle,
+            currentTheme, setCurrentTheme,
             email, setEmail,
             password, setPassword,
             streak, setStreak,
@@ -69,20 +82,21 @@ export const refreshUserContext = async (userContext: any) => {
             }
         });
 
-        console.log("Dados atualizados do usuário:", userResp.data);
-
         userContext.setName(userResp.data.name);
         userContext.setEmail(userResp.data.email);
         userContext.setStreak(userResp.data.streak);
-
         userContext.setPoints(userResp.data.points ?? userResp.data.coins ?? 0);
-
         userContext.setItems(userResp.data.items || []);
+
+        userContext.setCurrentAvatar(userResp.data.currentAvatarUrl || "");
+        userContext.setCurrentTitle(userResp.data.currentTitle || "");
+        userContext.setCurrentTheme(userResp.data.currentTheme || "");
 
         userContext.setXp(userResp.data.xp);
         userContext.setSignDate(new Date(userResp.data.sign_date));
         userContext.setRole(userResp.data.role);
+
     } catch (error) {
-        console.error("Erro ao atualizar contexto do usuário:", error);
+        console.error("Erro ao atualizar contexto:", error);
     }
 }
