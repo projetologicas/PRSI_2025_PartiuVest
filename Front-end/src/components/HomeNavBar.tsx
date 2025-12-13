@@ -31,7 +31,7 @@ export default function HomeNavBarUser() {
                 <Link to="/question_book" className="hover:text-teal-600 transition">Vestibulares</Link>
                 {/* Link Novo */}
                 <Link to="/leaderboard" className="hover:text-teal-600 transition">Ranking</Link>
-                <Link to="/loja" className="hover:text-teal-600 transition">Loja</Link>
+                <Link to="/shop" className="hover:text-teal-600 transition">Loja</Link>
             </div>
 
             {/* Stats e Perfil */}

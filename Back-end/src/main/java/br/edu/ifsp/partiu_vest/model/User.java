@@ -4,6 +4,7 @@ import br.edu.ifsp.partiu_vest.model.enums.Role;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,31 +13,54 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, length = 120, unique=true)
     private String email;
+
     @Column(nullable = false, length = 120)
     private String password;
+
     @Column(nullable = false, length = 120)
     private String name;
+
     @Column(nullable = false)
     private Date sign_date;
+
     @Column(nullable = false)
     private int streak;
+
     @Column(nullable = false)
     private int points;
+
     @Column(nullable = false)
     private int xp;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
+
     @Column(nullable = false)
     private Boolean enabled;
 
-    @ManyToMany
-    @JoinTable(name = "item",
+    // --- NOVOS CAMPOS: Itens Equipados ---
+    @Column(name = "current_avatar_url")
+    private String currentAvatarUrl;
+
+    @Column(name = "current_title")
+    private String currentTitle;
+
+    @Column(name = "current_theme")
+    private String currentTheme;
+
+    // --- INVENTÁRIO (Relacionamento ManyToMany) ---
+    // Alterei o nome da tabela intermediária para 'user_inventory' para não conflitar com a tabela 'item'
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_inventory",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id"))
-    private Set<Item> items;
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private Set<Item> items = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Attempt> attempts;
@@ -51,7 +75,11 @@ public class User {
         setPoints(0);
         setXp(0);
         setStreak();
+        // Define valores padrão se quiser
+        this.currentTheme = "light";
     }
+
+    // --- GETTERS E SETTERS ---
 
     public Long getId() {
         return id;
@@ -117,6 +145,10 @@ public class User {
         }
     }
 
+    public void resetStreak(){
+        this.streak = 0;
+    }
+
     public int getPoints() {
         return points;
     }
@@ -140,8 +172,37 @@ public class User {
             this.xp = 0;
         }
     }
-    private void resetStreak(){
-        this.streak = 0;
+
+    public Set<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<Item> items) {
+        this.items = items;
+    }
+
+    public String getCurrentAvatarUrl() {
+        return currentAvatarUrl;
+    }
+
+    public void setCurrentAvatarUrl(String currentAvatarUrl) {
+        this.currentAvatarUrl = currentAvatarUrl;
+    }
+
+    public String getCurrentTitle() {
+        return currentTitle;
+    }
+
+    public void setCurrentTitle(String currentTitle) {
+        this.currentTitle = currentTitle;
+    }
+
+    public String getCurrentTheme() {
+        return currentTheme;
+    }
+
+    public void setCurrentTheme(String currentTheme) {
+        this.currentTheme = currentTheme;
     }
 
     @Override

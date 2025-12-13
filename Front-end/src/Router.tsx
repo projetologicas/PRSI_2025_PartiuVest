@@ -13,6 +13,7 @@ import Vestibulares from "./pages/Vest";
 import QuestionBookDetails from "./pages/QuestionBookDetails";
 import { AttemptProvider } from "./common/context/AttemptContext";
 import Leaderboard from "./pages/Leaderboard";
+import ShopPage from "./pages/ShopPage.tsx";
 
 function Router() {
     return (
@@ -33,8 +34,9 @@ function Router() {
                                 <Route path="/question_book/details/:book_id" element={<AttemptProvider><QuestionBookDetails /></AttemptProvider>}/>
                                 <Route path="/question_book/attempt/:book_id"/>
                                 <Route path="/question_book/attempt/:book_id/:question_id" element={<AttemptProvider><QuestionPage /></AttemptProvider>}/>
-                            
-                        </Route>
+
+                            <Route path="/shop" element={<ShopPage />} />
+                            </Route>
 
                         <Route path="*" element={<NotFound />} />
                     </Routes>
