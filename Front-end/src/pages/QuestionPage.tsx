@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { getTokenCookie } from "../services/Cookies";
 import type { Question } from "../types/Question";
@@ -10,8 +10,11 @@ import { UserContext, refreshUserContext } from "../common/context/UserCotext";
 
 export default function QuestionPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { book_id, question_id } = useParams();
     const userContext = useContext(UserContext);
+
+    const isReadOnly = location.state?.readOnly || false;
 
     const [selected, setSelected] = useState<string | null>(null);
     const [question, setQuestion] = useState<Question | null>(null);
@@ -56,7 +59,8 @@ export default function QuestionPage() {
     }, [question_id]);
 
     const saveAnswer = async () => {
-        if (!selected) return;
+        // SEGURANÇA NO FRONT: Se for ReadOnly, não tenta salvar nada
+        if (isReadOnly || !selected) return;
 
         await api.post(`/attempt/question_commit`, {
             id: question_id,
@@ -82,17 +86,25 @@ export default function QuestionPage() {
         if (nextIndex >= 0 && nextIndex < attemptQuestions.length) {
             const nextQ = attemptQuestions[nextIndex];
             localStorage.setItem("attempt_questions_index", (nextIndex + 1).toString());
-            navigate(`/question_book/attempt/${book_id}/${nextQ.id}`);
+            // Repassa o state readOnly para a próxima página
+            navigate(`/question_book/attempt/${book_id}/${nextQ.id}`, { state: { readOnly: isReadOnly } });
         }
     };
 
     const handleJumpToQuestion = async (targetId: number, index: number) => {
-        await saveAnswer(); // Salva a atual antes de pular
+        await saveAnswer();
         localStorage.setItem("attempt_questions_index", index.toString());
-        navigate(`/question_book/attempt/${book_id}/${targetId}`);
+        // Repassa o state readOnly ao pular de questão
+        navigate(`/question_book/attempt/${book_id}/${targetId}`, { state: { readOnly: isReadOnly } });
     };
 
     const handleFinishAttempt = async () => {
+        // Se estiver vendo a correção, o botão de finalizar apenas sai da tela
+        if (isReadOnly) {
+            navigate(`/question_book/${book_id}`); // Volta para os detalhes do caderno
+            return;
+        }
+
         await saveAnswer();
 
         try {
@@ -146,26 +158,54 @@ export default function QuestionPage() {
                         <div className="flex-1 space-y-3">
                             {['A', 'B', 'C', 'D', 'E'].map((letter) => {
                                 const text = question?.[`enum_${letter.toLowerCase()}` as keyof Question];
-                                const isSelected = selected === letter;
+
+                                const isUserSelected = selected === letter;
+                                // Nota: Verifique se o backend retorna "answer" ou "right_answer" dentro do objeto question
+                                const isCorrectAnswer = question?.answer === letter;
+
+                                // Lógica de Classes CSS
+                                let borderClass = "border-transparent";
+                                let bgClass = "bg-white hover:bg-gray-50";
+                                let iconBgClass = "bg-gray-300";
+
+                                if (isReadOnly) {
+                                    // MODO CORREÇÃO
+                                    bgClass = "bg-white"; // Remove hover padrão
+
+                                    if (isCorrectAnswer) {
+                                        // Gabarito (Verde) - Aparece sempre, mesmo se o usuário errou
+                                        borderClass = "border-green-500";
+                                        bgClass = "bg-green-100";
+                                        iconBgClass = "bg-green-500";
+                                    } else if (isUserSelected && !isCorrectAnswer) {
+                                        // Erro do Usuário (Vermelho)
+                                        borderClass = "border-red-500";
+                                        bgClass = "bg-red-100";
+                                        iconBgClass = "bg-red-500";
+                                    }
+                                } else {
+                                    // MODO PROVA (Normal)
+                                    if (isUserSelected) {
+                                        borderClass = "border-teal-400 shadow-md";
+                                        bgClass = "bg-teal-100";
+                                        iconBgClass = "bg-teal-500";
+                                    }
+                                }
 
                                 return (
                                     <label
                                         key={letter}
-                                        className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border-2 ${
-                                            isSelected
-                                                ? "bg-teal-100 border-teal-400 shadow-md"
-                                                : "bg-white border-transparent hover:bg-gray-50"
-                                        }`}
+                                        className={`flex items-center gap-4 p-4 rounded-xl transition-all border-2 
+                                            ${borderClass} ${bgClass} ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}`}
                                     >
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white transition-colors ${
-                                            isSelected ? "bg-teal-500" : "bg-gray-300"
-                                        }`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white transition-colors ${iconBgClass}`}>
                                             <input
                                                 type="radio"
                                                 name="option"
                                                 value={letter}
-                                                checked={isSelected}
-                                                onChange={() => setSelected(letter)}
+                                                checked={isUserSelected}
+                                                disabled={isReadOnly} // Bloqueia o input
+                                                onChange={() => !isReadOnly && setSelected(letter)} // Só muda se não for ReadOnly
                                                 className="hidden"
                                             />
                                             {letter}

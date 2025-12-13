@@ -1,4 +1,4 @@
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { SystemContext } from "../common/context/SystemContext";
 import axios from "axios";
@@ -22,7 +22,7 @@ export default function QuestionBookDetails() {
     const { book_id } = useParams();
 
     useEffect(() => {
-        const fetchData = async () => { 
+        const fetchData = async () => {
             try {
                 systemContext.setLoading(true);
                 systemContext.setError(null);
@@ -129,7 +129,7 @@ export default function QuestionBookDetails() {
                 'Authorization': `Bearer ${getTokenCookie()}`
             }
         }).then(res => {
-            
+
             console.log(res.data);
             attemptContext.setAttempt(res.data);
             localStorage.setItem("current_attempt_id", res.data.id.toString());
@@ -145,7 +145,7 @@ export default function QuestionBookDetails() {
         localStorage.setItem("attempt_questions_index", "1");
         navigate(`/question_book/attempt/${attempt.id}/${attempt.questions_id[0]}`);
     }
-    
+
     return (
         <div className="min-h-screen bg-[#1e1b1c] text-white select-none">
             <HomeNavBar/>
@@ -218,7 +218,7 @@ export default function QuestionBookDetails() {
                                             )}
                                         </div>
 
-                                        <div className="text-sm text-gray-700 space-y-1">
+                                        <div className="text-sm text-gray-700 space-y-1 mb-3">
                                             <p>
                                                 <strong>Início:</strong> {formatDate(attempt.start_date)}
                                             </p>
@@ -226,19 +226,35 @@ export default function QuestionBookDetails() {
                                             <p>
                                                 <strong>Término:</strong> {formatDate(attempt.end_date)}
                                             </p>
-                                            
+
                                             {isAttemptComplete && (
                                                 <p>
                                                     <strong>Acertos:</strong> {attempt.correct_answers} de {attempt.total_questions}
                                                 </p>
                                             )}
+                                        </div>
+
+                                        {/* Lógica Condicional do Botão */}
+                                        {isAttemptComplete ? (
+                                            <button
+                                                onClick={() => {
+                                                    navigate(`/question_book/attempt/${attempt.id}/${attempt.questions_id[0]}`, {
+                                                        state: { readOnly: true }
+                                                    });
+                                                }}
+                                                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+                                            >
+                                                Ver Correção 📝
+                                            </button>
+                                        ) : (
                                             <button
                                                 onClick={() => {handleContinueAttempt(attempt)}}
-                                                className="bg-blue-500 hover:bg-blue-600 text-black font-semibold px-4 py-2 rounded-lg"
+                                                className="bg-blue-500 hover:bg-blue-600 text-black font-semibold px-4 py-2 rounded-lg transition-colors"
                                             >
-                                                Continuar tentativa
+                                                Continuar tentativa ▶️
                                             </button>
-                                        </div>
+                                        )}
+
                                     </div>
                                 );
                             })}
@@ -259,11 +275,6 @@ export default function QuestionBookDetails() {
                                     <p className="font-semibold text-lg text-black">
                                         #{q.number} – {q.original_question_book_model}
                                     </p>
-                                    {/*
-                                    <p className="text-gray-600 text-sm">
-                                        Área: {q.area}
-                                    </p>
-                                    */}
                                 </div>
                             ))}
                         </div>
