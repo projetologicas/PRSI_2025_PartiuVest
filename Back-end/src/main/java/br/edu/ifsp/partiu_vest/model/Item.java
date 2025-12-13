@@ -1,6 +1,7 @@
 package br.edu.ifsp.partiu_vest.model;
 
 import br.edu.ifsp.partiu_vest.model.enums.ItemType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -21,6 +22,7 @@ public class Item {
     private int price;
 
     @ManyToMany(mappedBy = "items")
+    @JsonIgnore
     private Set<User> users;
 
     public Item(String name, String image_url, ItemType type, int price) {
