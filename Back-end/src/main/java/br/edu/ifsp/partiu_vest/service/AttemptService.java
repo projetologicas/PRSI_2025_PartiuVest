@@ -115,6 +115,10 @@ public class AttemptService {
         Attempt attempt = attempt_repository.findById(attemptId)
                 .orElseThrow(() -> new RuntimeException("Tentativa não encontrada"));
 
+        if (attempt.getEnd_date() != null) {
+            return AttemptResponse.from(attempt);
+        }
+
         User user = attempt.getUser();
         int acertos = 0;
 
@@ -126,15 +130,23 @@ public class AttemptService {
         }
 
         int reward = acertos * 10;
-
-        user.setXp(user.getXp() + reward);
         user.setPoints(user.getPoints() + reward);
+        user.setXp(user.getXp() + reward);
 
-        if (reward > 0) {
-            user.setStreak();
+        java.time.LocalDate hoje = java.time.LocalDate.now();
+        java.time.LocalDate ultimoEstudo = user.getLastStreakDate();
+
+        if (ultimoEstudo == null) {
+            user.setStreak(1);
+        } else if (ultimoEstudo.isEqual(hoje.minusDays(1))) {
+            user.setStreak(user.getStreak() + 1);
+        } else if (ultimoEstudo.isBefore(hoje.minusDays(1))) {
+            user.setStreak(1);
         }
 
-        attempt.setEnd_date(LocalDate.now());
+        user.setLastStreakDate(hoje);
+
+        attempt.setEnd_date(java.time.LocalDate.now());
 
         attempt_repository.save(attempt);
         user_repository.save(user);
