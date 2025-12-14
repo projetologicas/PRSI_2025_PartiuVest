@@ -9,11 +9,13 @@ import type { Question } from "../types/Question";
 import type { AttemptQuestion } from "../types/AttemptQuestion";
 import HomeNavBar from "../components/HomeNavBar";
 import { AttemptContext } from "../common/context/AttemptContext";
+import { UserContext } from "../common/context/UserCotext";
 
 export default function QuestionBookDetails() {
     const navigate = useNavigate();
     const systemContext = useContext(SystemContext);
     const attemptContext = useContext(AttemptContext);
+    const userContext = useContext(UserContext); // Para verificação de permissão
 
     const [question_book, setQuestionBook] = useState<QuestionBook>();
     const [attempts, setAttempts] = useState<Attempt[]>([]);
@@ -26,91 +28,82 @@ export default function QuestionBookDetails() {
             try {
                 systemContext.setLoading(true);
                 systemContext.setError(null);
-                const question_book_response = await axios.get(`http://localhost:8080/question_book/id?question_book_id=${book_id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${getTokenCookie()}`
-                    }
-                }).then(res => {
-                    console.log("question_book");
-                    console.log(res.data);
-                    setQuestionBook(res.data);
-                });
-                const attempts_response = await axios.get(`http://localhost:8080/attempt/question_book_user?question_book_id=${book_id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${getTokenCookie()}`
-                    }
-                }).then(res => {
-                    console.log("attempts");
-                    console.log(res.data);
-                    setAttempts([...res.data]);
-                });
-                const questions_response = await axios.get(`http://localhost:8080/question/question_book?question_book_id=${book_id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${getTokenCookie()}`
-                    }
-                }).then(res => {
-                    console.log("questions");
-                    console.log(res.data);
-                    setQuestions([...res.data]);
-                    var original_book_ids = [...new Set(res.data.map((q: Question) => q.original_question_book_id))];
-                    console.log(original_book_ids);
-                    original_book_ids.forEach(async (id) => {
-                        const original_book_response = await axios.get(`http://localhost:8080/question_book/id?question_book_id=${id}`, {
-                            headers: {
-                                'Authorization': `Bearer ${getTokenCookie()}`
-                            }
-                        }).then(res => {
-                            console.log("original_book");
-                            console.log(res.data);
-                            setQuestions(prevQuestions => {
-                                return prevQuestions.map(q => {
-                                    if (q.original_question_book_id === id) {
-                                        return {
-                                            ...q,
-                                            original_question_book_model: res.data.model,
-                                        };
-                                    }
-                                    return q;
-                                });
-                            });
-                        });
-                    });
-                });
-                attempts.map(async (attempt) => {
-                    console.log("Fetching attempt questions for attempt id:", attempt.id);
-                    const attempt_questions_response = await axios.get(`http://localhost:8080/attempt/attempted_questions?attempt_book_id=${attempt.id}`, {
-                        headers: {
-                            'Authorization': `Bearer ${getTokenCookie()}`
-                        }
-                    }).then(res => {
-                        console.log("question_attempts");
-                        console.log(res.data);
-                        setAttempts(prevAttempts => {
-                            return prevAttempts.map(a => {
-                                if (a.id === attempt.id) {
-                                    attempt.correct_answers = res.data.filter((q: AttemptQuestion) => q.user_answer == q.right_answer).length;
-                                    attempt.total_questions = res.data.length;
-                                    return {
-                                        ...a,
-                                        questions: res.data as AttemptQuestion[],
-                                    };
-                                }
-                                return a;
-                            });
-                        });
-                    });
-                });
+                const headers = { 'Authorization': `Bearer ${getTokenCookie()}` };
 
-            } catch (err : any) {
+                // 1. Busca Dados Principais em Paralelo
+                const [bookRes, attemptsRes, questionsRes] = await Promise.all([
+                    axios.get(`http://localhost:8080/question_book/id?question_book_id=${book_id}`, { headers }),
+                    axios.get(`http://localhost:8080/attempt/question_book_user?question_book_id=${book_id}`, { headers }),
+                    axios.get(`http://localhost:8080/question/question_book?question_book_id=${book_id}`, { headers })
+                ]);
+
+                setQuestionBook(bookRes.data);
+
+                // --- VERIFICAÇÃO DE PERMISSÃO (Simulado Personalizado) ---
+                // Se for gerado (custom) e o email do criador não bater com o usuário logado
+                // Nota: Assumimos que o backend envia 'user_email' ou similar. Se não enviar, essa checagem pode falhar silenciosamente ou deve ser removida.
+                if (bookRes.data.r_generated && bookRes.data.user_email && bookRes.data.user_email !== userContext.email) {
+                    alert("Você não tem permissão para acessar este caderno personalizado.");
+                    navigate('/home');
+                    return;
+                }
+
+                // 2. Processa Questões (Busca modelos originais)
+                let loadedQuestions = questionsRes.data;
+                const originalBookIds = [...new Set(loadedQuestions.map((q: any) => q.original_question_book_id))];
+
+                if (originalBookIds.length > 0) {
+                    const bookModels = await Promise.all(
+                        originalBookIds.map((id) =>
+                            axios.get(`http://localhost:8080/question_book/id?question_book_id=${id}`, { headers })
+                                .then(res => ({ id, model: res.data.model }))
+                        )
+                    );
+
+                    loadedQuestions = loadedQuestions.map((q: any) => {
+                        const found = bookModels.find(b => b.id === q.original_question_book_id);
+                        return found ? { ...q, original_question_book_model: found.model } : q;
+                    });
+                }
+                setQuestions(loadedQuestions);
+
+                // 3. Processa Tentativas (Busca detalhes de cada tentativa)
+                // Substituindo o map(async) incorreto por Promise.all
+                const detailedAttempts = await Promise.all(
+                    attemptsRes.data.map(async (attempt: Attempt) => {
+                        try {
+                            const detailRes = await axios.get(`http://localhost:8080/attempt/attempted_questions?attempt_book_id=${attempt.id}`, { headers });
+                            const attemptQs = detailRes.data as AttemptQuestion[];
+
+                            // Calcula estatísticas
+                            const correctCount = attemptQs.filter(q => q.user_answer === q.right_answer).length;
+
+                            return {
+                                ...attempt,
+                                correct_answers: correctCount,
+                                total_questions: attemptQs.length,
+                                questions: attemptQs
+                            };
+                        } catch (e) {
+                            console.error(`Erro ao carregar detalhes da tentativa ${attempt.id}`, e);
+                            return attempt;
+                        }
+                    })
+                );
+
+                // Ordena por ID decrescente
+                setAttempts(detailedAttempts.sort((a, b) => b.id - a.id));
+
+            } catch (err: any) {
                 console.error(err);
-                systemContext.setError(err?.response?.data?.message ?? 'Erro ao adquirir livro de questões');
+                systemContext.setError(err?.response?.data?.message ?? 'Erro ao carregar dados do caderno.');
             } finally {
                 systemContext.setLoading(false);
             }
         };
 
-        fetchData();
-    }, []);
+        if (book_id) fetchData();
+    }, [book_id]);
 
     const formatDate = (date: Date | null | undefined) => {
         if (!date) return "--";
@@ -122,163 +115,132 @@ export default function QuestionBookDetails() {
     };
 
     const handleNewAttempt = async () => {
-        const attempt_response = await axios.post(`http://localhost:8080/attempt/new`, {
-            question_book_id: question_book?.id
-        }, {
-            headers: {
-                'Authorization': `Bearer ${getTokenCookie()}`
-            }
-        }).then(res => {
+        try {
+            systemContext.setLoading(true);
+            const res = await axios.post(`http://localhost:8080/attempt/new`,
+                { question_book_id: question_book?.id },
+                { headers: { 'Authorization': `Bearer ${getTokenCookie()}` } }
+            );
 
-            console.log(res.data);
             attemptContext.setAttempt(res.data);
             localStorage.setItem("current_attempt_id", res.data.id.toString());
-            localStorage.setItem("attempt_questions_index", "1");
-            navigate(`/question_book/attempt/${res.data.id}/${res.data.questions_id[0]}`);
-        });
+            // Usa questions_id (lista de IDs) ou questions (lista de objetos)
+            const firstId = res.data.questions_id ? res.data.questions_id[0] : res.data.questions[0].id;
+
+            navigate(`/question_book/attempt/${res.data.id}/${firstId}`);
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao iniciar nova tentativa.");
+        } finally {
+            systemContext.setLoading(false);
+        }
     }
 
-    const handleContinueAttempt = async (attempt : Attempt) => {
+    const handleContinueAttempt = (attempt: Attempt) => {
         attemptContext.setAttempt(attempt);
-        console.log(attempt);
         localStorage.setItem("current_attempt_id", attempt.id.toString());
-        localStorage.setItem("attempt_questions_index", "1");
-        navigate(`/question_book/attempt/${attempt.id}/${attempt.questions_id[0]}`);
+
+        // Tenta ir para a primeira não respondida
+        let nextQ = attempt.questions_id?.[0];
+        if (attempt.questions) {
+            const pending = attempt.questions.find(q => !q.user_answer);
+            if (pending) nextQ = pending.id;
+        }
+
+        navigate(`/question_book/attempt/${attempt.id}/${nextQ}`);
     }
 
     return (
-        <div className="min-h-screen bg-[#1e1b1c] text-white select-none">
+        <div className="min-h-screen bg-theme-bg text-theme-text select-none pb-10 transition-colors duration-300">
             <HomeNavBar/>
             <div className="mx-auto max-w-6xl p-8">
 
-                {/* Título e informações gerais */}
-                <div className="bg-white shadow-md rounded-lg p-7 mb-10">
-
+                {/* HEADER DO CADERNO */}
+                <div className="bg-theme-card shadow-md rounded-lg p-7 mb-10 border border-theme-border">
                     <div className="flex items-center gap-4 mb-4">
-                        <h1 className="text-4xl font-bold text-black">{question_book != null ? question_book.model : ""}</h1>
-
-                        {question_book != null ? question_book.r_generated : false}
+                        <h1 className="text-4xl font-bold text-theme-text">{question_book?.model || "Carregando..."}</h1>
+                        {question_book?.r_generated && (
+                            <span className="bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                Personalizado
+                            </span>
+                        )}
                     </div>
-
-                    <div className="text-gray-700 text-lg space-y-1">
-                        {/*<p><strong>Criado por:</strong> {question_book.creator_name}</p>*/}
+                    <div className="text-theme-subtext text-lg space-y-1">
                         <p><strong>Data de criação:</strong> {formatDate(question_book?.creation_date)}</p>
-                        <p><strong>Total de questões:</strong> {question_book?.questions_id.length}</p>
+                        <p><strong>Total de questões:</strong> {questions.length}</p>
                     </div>
-
                 </div>
 
-
-                {/* Layout principal: Coluna esquerda (tentativas) e direita (questões) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                     {/* COLUNA ESQUERDA – TENTATIVAS */}
-                    <div className="bg-white shadow-md rounded-lg p-6">
+                    <div className="bg-theme-card shadow-md rounded-lg p-6 border border-theme-border">
                         <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-2xl font-bold">Tentativas</h2>
-
-                            <button
-                                onClick={handleNewAttempt}
-                                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-4 py-2 rounded-lg"
-                            >
+                            <h2 className="text-2xl font-bold text-theme-text">Tentativas</h2>
+                            <button onClick={handleNewAttempt} className="bg-theme-accent hover:opacity-90 text-white font-bold px-4 py-2 rounded-lg transition shadow-md">
                                 Nova tentativa
                             </button>
                         </div>
 
-                        <div className="space-y-4">
-                            {attempts.length === 0 && (
-                                <p className="text-gray-600">Nenhuma tentativa registrada ainda.</p>
-                            )}
+                        <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            {attempts.length === 0 && <p className="text-theme-subtext italic">Nenhuma tentativa iniciada.</p>}
 
                             {attempts.map((attempt) => {
-                                const isAttemptComplete = !!attempt.end_date;
-
+                                const isFinished = !!attempt.end_date;
                                 return (
-                                    <div
-                                        key={attempt.id}
-                                        className="p-4 border rounded-lg bg-gray-50"
-                                    >
+                                    <div key={attempt.id} className="p-4 border border-theme-border rounded-lg bg-theme-bg transition hover:border-theme-subtext">
                                         <div className="flex justify-between mb-2">
-                                            <span className="font-semibold">
-                                                Tentativa #{attempt.id}
+                                            <span className="font-bold text-theme-text">Tentativa #{attempt.id}</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold text-white ${isFinished ? 'bg-green-600' : 'bg-blue-500'}`}>
+                                                {isFinished ? 'Finalizada' : 'Em Andamento'}
                                             </span>
-
-                                            {isAttemptComplete ? (
-                                                <span className="bg-green-600 text-black px-2 py-1 rounded-full text-xs">
-                                                    Finalizada
-                                                </span>
-                                            ) : (
-                                                <span className="bg-blue-500 text-black px-2 py-1 rounded-full text-xs">
-                                                    Em andamento
-                                                </span>
+                                        </div>
+                                        <div className="text-sm text-theme-subtext mb-3 space-y-1">
+                                            <p>Início: {formatDate(attempt.start_date)}</p>
+                                            {isFinished && (
+                                                <>
+                                                    <p>Fim: {formatDate(attempt.end_date)}</p>
+                                                    <p className="font-bold text-theme-text">Acertos: {attempt.correct_answers} / {attempt.total_questions}</p>
+                                                </>
                                             )}
                                         </div>
-
-                                        <div className="text-sm text-gray-700 space-y-1 mb-3">
-                                            <p>
-                                                <strong>Início:</strong> {formatDate(attempt.start_date)}
-                                            </p>
-
-                                            <p>
-                                                <strong>Término:</strong> {formatDate(attempt.end_date)}
-                                            </p>
-
-                                            {isAttemptComplete && (
-                                                <p>
-                                                    <strong>Acertos:</strong> {attempt.correct_answers} de {attempt.total_questions}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        {/* Lógica Condicional do Botão */}
-                                        {isAttemptComplete ? (
+                                        {isFinished ? (
                                             <button
                                                 onClick={() => {
-                                                    navigate(`/question_book/attempt/${attempt.id}/${attempt.questions_id[0]}`, {
-                                                        state: { readOnly: true }
-                                                    });
+                                                    const firstQ = attempt.questions?.[0]?.id || attempt.questions_id?.[0];
+                                                    navigate(`/question_book/attempt/${attempt.id}/${firstQ}`, { state: { readOnly: true } });
                                                 }}
-                                                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+                                                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition"
                                             >
-                                                Ver Correção 📝
+                                                Ver Correção
                                             </button>
                                         ) : (
                                             <button
-                                                onClick={() => {handleContinueAttempt(attempt)}}
-                                                className="bg-blue-500 hover:bg-blue-600 text-black font-semibold px-4 py-2 rounded-lg transition-colors"
+                                                onClick={() => handleContinueAttempt(attempt)}
+                                                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded transition"
                                             >
-                                                Continuar tentativa ▶️
+                                                Continuar
                                             </button>
                                         )}
-
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
 
-
                     {/* COLUNA DIREITA – QUESTÕES */}
-                    <div className="bg-white shadow-md rounded-lg p-6">
-                        <h2 className="text-2xl font-bold mb-5 text-black">Questões do caderno</h2>
-
-                        <div className="space-y-3">
-                            {questions.map((q) => (
-                                <div
-                                    key={q.id}
-                                    className="p-3 border rounded-lg bg-gray-50"
-                                >
-                                    <p className="font-semibold text-lg text-black">
-                                        #{q.number} – {q.original_question_book_model}
-                                    </p>
+                    <div className="bg-theme-card shadow-md rounded-lg p-6 border border-theme-border">
+                        <h2 className="text-2xl font-bold mb-5 text-theme-text">Conteúdo da Prova</h2>
+                        <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            {questions.map((q, idx) => (
+                                <div key={q.id} className="p-3 border border-theme-border rounded bg-theme-bg flex justify-between items-center">
+                                    <span className="font-bold text-theme-subtext">#{idx + 1}</span>
+                                    <span className="text-sm text-theme-text truncate max-w-[250px]">{q.original_question_book_model || "Questão Geral"}</span>
                                 </div>
                             ))}
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
         </div>
     );
