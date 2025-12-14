@@ -1,16 +1,19 @@
 package br.edu.ifsp.partiu_vest.service;
 
 import br.edu.ifsp.partiu_vest.dto.ExamJsonDTO;
-import br.edu.ifsp.partiu_vest.dto.QuestionBookDTO; // ou QuestionBookRequestDTO se tiver alterado
+import br.edu.ifsp.partiu_vest.dto.QuestionBookDTO;
 import br.edu.ifsp.partiu_vest.dto.QuestionJsonDTO;
 import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
+import br.edu.ifsp.partiu_vest.model.User;
+import br.edu.ifsp.partiu_vest.model.enums.Role;
 import br.edu.ifsp.partiu_vest.repository.QuestionBookRepository;
 import br.edu.ifsp.partiu_vest.repository.QuestionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionBookService {
@@ -30,12 +33,20 @@ public class QuestionBookService {
         return question_book_repository.findById(question_book_id).orElseThrow();
     }
 
+    public Set<QuestionBook> getAvailableBooks(User user) {
+        List<QuestionBook> allBooks = question_book_repository.findAll();
+
+        return allBooks.stream()
+                .filter(book -> !book.isR_generated() || (book.getUser() != null && book.getUser().getId().equals(user.getId())))
+                .collect(Collectors.toSet());
+    }
+
     public Set<QuestionBook> getAllQuestionBook() {
         return new HashSet<>(question_book_repository.findAll());
     }
 
     @Transactional
-    public QuestionBook createRandomExam(){
+    public QuestionBook createRandomExam(User user){
         List<Question> allQuestions = question_repository.findAll();
         final int count = 90;
 
@@ -45,11 +56,11 @@ public class QuestionBookService {
         Collections.shuffle(allQuestions);
         Set<Question> randomQuestions = new HashSet<>(allQuestions.subList(0, count));
 
-        return saveNewBook(randomQuestions, "Aleatorio");
+        return saveNewBook(randomQuestions, "Aleatorio", user);
     }
 
     @Transactional
-    public QuestionBook createCustom(QuestionBookDTO request) {
+    public QuestionBook createCustom(QuestionBookDTO request, User user) {
         int amount = request.amount();
         List<Long> sourceIds = request.yearsIds();
 
@@ -67,34 +78,43 @@ public class QuestionBookService {
         List<Question> finalPool = new ArrayList<>(uniquePool);
 
         if (finalPool.size() < amount) {
-            throw new IllegalStateException("Não há questões suficientes nos cadernos selecionados. " +
-                    "Disponível: " + finalPool.size() + ", Solicitado: " + amount);
+            throw new IllegalStateException("Não há questões suficientes. Disponível: " + finalPool.size());
         }
 
         Collections.shuffle(finalPool);
         Set<Question> selectedQuestions = new HashSet<>(finalPool.subList(0, amount));
 
-        return saveNewBook(selectedQuestions, "Personalizado (" + amount + " questões)");
+        return saveNewBook(selectedQuestions, "Personalizado (" + amount + " questões)", user);
     }
 
     @Transactional
-    public void deleteQuestionBook(Long id) {
+    public void deleteQuestionBook(Long id, User user) {
         QuestionBook book = question_book_repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Caderno não encontrado"));
 
         if (!book.isR_generated()) {
-            throw new IllegalArgumentException("Não é permitido deletar cadernos oficiais (vestibulares originais).");
+            if (user.getRole() != Role.ADMIN) {
+                throw new IllegalArgumentException("Não é permitido deletar cadernos oficiais.");
+            }
+        } else {
+            boolean isOwner = book.getUser() != null && book.getUser().getId().equals(user.getId());
+            boolean isAdmin = user.getRole() == Role.ADMIN;
+
+            if (!isOwner && !isAdmin) {
+                throw new SecurityException("Você não tem permissão para excluir este simulado.");
+            }
         }
 
         question_book_repository.delete(book);
     }
 
-    private QuestionBook saveNewBook(Set<Question> questions, String modelName) {
+    private QuestionBook saveNewBook(Set<Question> questions, String modelName, User user) {
         QuestionBook newBook = new QuestionBook();
         newBook.setCreation_date();
         newBook.setModel(modelName);
         newBook.setR_generated(true);
         newBook.setQuestions(questions);
+        newBook.setUser(user);
 
         return question_book_repository.save(newBook);
     }
@@ -123,13 +143,10 @@ public class QuestionBookService {
                     qDto.optionE(),
                     dto.title()
             );
-
             q.setQuestion_book(savedBook);
             questions.add(q);
         }
-
         question_repository.saveAll(questions);
-
         savedBook.setQuestions(questions);
         return question_book_repository.save(savedBook);
     }

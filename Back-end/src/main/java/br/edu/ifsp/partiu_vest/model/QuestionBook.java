@@ -11,35 +11,45 @@ public class QuestionBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private Date creation_date;
+
     @Column
     private String model;
-    @Column boolean r_generated;
+
+    @Column
+    private boolean r_generated;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question_book")
     private Set<Attempt> attempts;
 
     @ManyToMany
     @JoinTable(
-            name = "book_question", // Nome da nova tabela de junção
+            name = "book_question",
             joinColumns = @JoinColumn(name = "question_book_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id")
     )
     private Set<Question> questions;
 
-    public QuestionBook(User user_id, String model, boolean r_generated) {
+    public QuestionBook(User user, String model, boolean r_generated) {
+        this.user = user;
         setCreation_date();
         setModel(model);
         setR_generated(r_generated);
     }
+
     public QuestionBook(String model) {
         setCreation_date();
         setModel(model);
         setR_generated(false);
     }
-    public QuestionBook() {
 
+    public QuestionBook() {
     }
 
     public Long getId() {
@@ -52,6 +62,10 @@ public class QuestionBook {
 
     public void setCreation_date(Date creation_date) {
         this.creation_date = creation_date;
+    }
+
+    public void setCreation_date() {
+        this.creation_date = new Date();
     }
 
     public String getModel() {
@@ -70,8 +84,13 @@ public class QuestionBook {
         this.r_generated = r_generated;
     }
 
-    public void setCreation_date() {
-        this.creation_date = new Date();
+    // --- Getters e Setters do User ---
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Set<Attempt> getAttempts() {
@@ -97,6 +116,7 @@ public class QuestionBook {
                 ", creation_date=" + creation_date +
                 ", model='" + model + '\'' +
                 ", r_generated=" + r_generated +
+                ", user_id=" + (user != null ? user.getId() : "null") +
                 ", attempts=" + attempts +
                 ", questions=" + questions +
                 '}';

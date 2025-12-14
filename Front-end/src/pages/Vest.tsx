@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import type { QuestionBook } from "../types/QuestionBook";
 import { getTokenCookie } from "../services/Cookies";
 import { SystemContext } from "../common/context/SystemContext";
-import { UserContext } from "../common/context/UserCotext";
 import HomeNavBar from "../components/HomeNavBar";
 import api from "../services/api";
 
@@ -11,24 +10,21 @@ export default function Vestibulares() {
     const [lista, setLista] = useState<QuestionBook[]>([]);
     const navigate = useNavigate();
     const systemContext = useContext(SystemContext);
-    const userContext = useContext(UserContext); // Para pegar o email/id do usuário
 
     // Estados do Modal
     const [showModal, setShowModal] = useState(false);
     const [selectedYears, setSelectedYears] = useState<number[]>([]);
     const [amount, setAmount] = useState(30);
 
-    // Filtra apenas os cadernos "Originais" para serem usados como base
     const availableYears = lista.filter(b => !b.r_generated);
 
-    // --- FUNÇÃO DE CARREGAMENTO ---
     const fetchVestibulares = async () => {
         try {
+            // O backend agora retorna: Oficiais + Meus Personalizados
             const res = await api.get<QuestionBook[]>("/question_book/", {
                 headers: { 'Authorization': `Bearer ${getTokenCookie()}` }
             });
 
-            // Ordena: Mais recentes primeiro
             const sortedList = res.data.sort((a, b) =>
                 new Date(b.creation_date).getTime() - new Date(a.creation_date).getTime()
             );
@@ -36,7 +32,7 @@ export default function Vestibulares() {
             setLista(sortedList);
         } catch (err: any) {
             console.error(err);
-            systemContext.setError(err?.response?.data?.message ?? 'Erro ao adquirir livros de questões');
+            systemContext.setError(err?.response?.data?.message ?? 'Erro ao buscar simulados.');
         }
     };
 
@@ -53,10 +49,11 @@ export default function Vestibulares() {
             await api.delete(`/question_book/${id}`, {
                 headers: { 'Authorization': `Bearer ${getTokenCookie()}` }
             });
-            await fetchVestibulares();
-        } catch (error) {
+            await fetchVestibulares(); // Recarrega a lista
+        } catch (error: any) {
             console.error("Erro ao deletar", error);
-            alert("Erro ao excluir.");
+            // Mostra mensagem amigável caso o backend negue (403/500)
+            alert(error?.response?.data?.message || "Erro ao excluir. Verifique se você tem permissão.");
         }
     };
 
@@ -67,7 +64,7 @@ export default function Vestibulares() {
             });
             await fetchVestibulares();
         } catch (error) {
-            console.error("Erro ao gerar aleatório", error);
+            console.error("Erro ao gerar", error);
         }
     }
 
@@ -83,39 +80,17 @@ export default function Vestibulares() {
             setSelectedYears([]);
             await fetchVestibulares();
         } catch (error) {
-            console.error("Erro ao criar customizado", error);
+            console.error("Erro ao criar", error);
             alert("Erro ao criar simulado.");
         }
     };
 
-    // FILTRAGEM FINAL PARA EXIBIÇÃO
-    // 1. Oficiais: r_generated = false
-    // 2. Personalizados: r_generated = true.
-    // Regra: "usuários só devem ver os que eles mesmos criaram".
-    // Verificamos se o book tem creator_email ou user_id igual ao do contexto.
-    // Se o objeto não tiver esse campo, assumimos que o backend já filtrou (mas vamos filtrar visualmente se possível)
-
-    const visibleBooks = lista.filter(vest => {
-        if (!vest.r_generated) return true; // Mostra todos os oficiais
-
-        // Se for gerado, verifica propriedade (assumindo que o back manda user_email ou creator_email)
-        // Se o seu backend não manda isso, essa checagem pode falhar (exibir tudo ou nada).
-        // Ajuste 'user_email' conforme seu DTO real.
-        const isMyBook = (vest as any).user_email === userContext.email || (vest as any).creator_email === userContext.email;
-
-        // Fallback: Se não tiver campo de email, mostra (assumindo filtro no back)
-        // ou esconde se quiser ser restritivo. Vou assumir filtro no back + fallback visual.
-        return isMyBook || (vest as any).user_id === (userContext as any).id;
-    });
-
     return (
         <div className="min-h-screen bg-theme-bg text-theme-text pb-10 transition-colors duration-300 font-sans">
-
             <HomeNavBar/>
 
             <div className="mx-auto mt-8 max-w-7xl px-4">
 
-                {/* Header e Ações */}
                 <div className="bg-theme-card rounded-xl shadow-lg p-8 border border-theme-border mb-8">
                     <h1 className="text-3xl font-bold mb-6 text-theme-text">Meus Simulados & Vestibulares</h1>
 
@@ -124,25 +99,24 @@ export default function Vestibulares() {
                             onClick={handleNewQuestionBook}
                             className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-4 rounded-xl text-lg flex-1 shadow-md transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                            <span>🎲</span> Gerar Aleatório Rápido
+                            Gerar simulado aleatório
                         </button>
 
                         <button
                             onClick={() => setShowModal(true)}
                             className="bg-theme-accent hover:opacity-90 text-white font-bold px-6 py-4 rounded-xl text-lg flex-1 shadow-md transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                            <span>⚙️</span> Criar Personalizado
+                            Criar simulado personalizado
                         </button>
                     </div>
                 </div>
 
-                {/* Grid de Cadernos */}
                 <div className="grid gap-4">
-                    {visibleBooks.length === 0 && (
+                    {lista.length === 0 && (
                         <p className="text-center text-theme-subtext py-10">Nenhum simulado encontrado.</p>
                     )}
 
-                    {visibleBooks.map((vest) => {
+                    {lista.map((vest) => {
                         const creationDate = new Date(vest.creation_date).toLocaleDateString("pt-BR");
                         const questionsCount = vest.questions_id ? vest.questions_id.length : 0;
                         const isCustom = vest.r_generated;
@@ -175,7 +149,7 @@ export default function Vestibulares() {
                                         </div>
                                     </div>
 
-                                    {/* Botão Delete (Só para customizados) */}
+                                    {/* Botão Delete (Visível apenas em Personalizados) */}
                                     {isCustom && (
                                         <button
                                             onClick={(e) => handleDelete(e, vest.id)}
@@ -194,7 +168,7 @@ export default function Vestibulares() {
                 </div>
             </div>
 
-            {/* MODAL CONFIGURAÇÃO */}
+            {/* ... Modal Code (Mantenha o mesmo modal do código anterior) ... */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
                     <div className="bg-theme-card p-8 rounded-2xl w-full max-w-md shadow-2xl border border-theme-border relative">
@@ -210,10 +184,10 @@ export default function Vestibulares() {
                             onChange={e => setAmount(Number(e.target.value))}
                             className="w-full p-3 bg-theme-bg border border-theme-border rounded-xl mb-6 text-theme-text focus:border-theme-accent outline-none"
                         >
-                            <option value={10}>10 Questões (Rápido)</option>
-                            <option value={30}>30 Questões (Treino)</option>
-                            <option value={60}>60 Questões (Intenso)</option>
-                            <option value={90}>90 Questões (Simulado Real)</option>
+                            <option value={10}>10 Questões</option>
+                            <option value={30}>30 Questões</option>
+                            <option value={60}>60 Questões</option>
+                            <option value={90}>90 Questões</option>
                         </select>
 
                         <label className="block mb-2 font-bold text-theme-text text-sm uppercase">Fontes / Vestibulares</label>
