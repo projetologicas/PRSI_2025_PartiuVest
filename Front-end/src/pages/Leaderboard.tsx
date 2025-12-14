@@ -6,6 +6,8 @@ import { UserContext } from "../common/context/UserCotext";
 
 type RankingType = 'XP' | 'STREAK';
 
+const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
 export default function Leaderboard() {
     const userContext = useContext(UserContext);
     const [rankingType, setRankingType] = useState<RankingType>('XP');
@@ -129,21 +131,32 @@ export default function Leaderboard() {
 
                                             {/* Nome e Avatar */}
                                             <div className="col-span-7 flex items-center gap-4 pl-4">
-                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold text-white shadow-md ${
+                                                {/* 2. Abordagem atualizada igual a Dados.tsx:
+                                                    - Usa DEFAULT_AVATAR se user.currentAvatarUrl for nulo
+                                                    - Mantém o estilo de borda/gradiente
+                                                */}
+                                                <div className={`w-12 h-12 p-0.5 rounded-full flex items-center justify-center shadow-md ${
                                                     isMe ? 'bg-gradient-to-tr from-blue-500 to-teal-400' : 'bg-gray-500'
                                                 }`}>
-                                                    {user.currentAvatarUrl ? (
-                                                        <img src={user.currentAvatarUrl} className="w-full h-full rounded-full object-cover" alt="" />
-                                                    ) : (
-                                                        user.name.charAt(0).toUpperCase()
-                                                    )}
+                                                    <img
+                                                        src={userContext.currentAvatar || DEFAULT_AVATAR}
+                                                        className="w-full h-full rounded-full object-cover bg-theme-bg border-2 border-theme-card"
+                                                        alt="Avatar"
+                                                    />
                                                 </div>
-                                                <div className="flex flex-col">
+
+                                                <div className="flex flex-col items-start gap-1">
                                                     <span className={`text-lg leading-tight truncate ${isMe ? 'font-bold text-blue-500' : 'font-semibold text-theme-text'}`}>
                                                         {user.name} {isMe && <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded ml-2">VOCÊ</span>}
                                                     </span>
-                                                    {user.currentTitle && (
-                                                        <span className="text-xs text-theme-subtext font-bold uppercase">{user.currentTitle}</span>
+
+                                                    {/* 3. Estilo do Título igual ao Dados.tsx (Tag Style)
+                                                        Adaptado o tamanho (py-0.5) para caber na lista
+                                                    */}
+                                                    {userContext.currentTitle && (
+                                                        <span className="bg-theme-bg border border-theme-border text-theme-accent px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
+                                                            {userContext.currentTitle}
+                                                        </span>
                                                     )}
                                                 </div>
                                             </div>
