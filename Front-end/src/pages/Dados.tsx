@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { refreshUserContext, UserContext } from "../common/context/UserCotext";
+import { refreshUserContext, UserContext } from "../common/context/UserCotext"; // Verifique se o nome do arquivo é UserCotext ou UserContext
 import { SystemContext } from "../common/context/SystemContext";
 import { removeTokenCookie, getTokenCookie } from "../services/Cookies";
 import api from "../services/api";
-import type {ShopItem} from "../types/ShopItem";
+import type { ShopItem } from "../types/ShopItem";
 
 const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
@@ -15,11 +15,29 @@ export default function PerfilPage() {
 
     const [activeTab, setActiveTab] = useState<'AVATAR' | 'TITLE' | 'THEME'>('AVATAR');
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
+
     useEffect(() => {
         if (!userContext.name) {
             refreshUserContext(userContext);
         }
     }, []);
+
+    const openEditModal = () => {
+        setFormData({
+            name: userContext.name || "",
+            email: userContext.email || "",
+            password: "",
+            confirmPassword: ""
+        });
+        setIsEditing(true);
+    };
 
     const handleLogout = () => {
         removeTokenCookie();
@@ -30,13 +48,10 @@ export default function PerfilPage() {
     const handleEquip = async (item: ShopItem) => {
         try {
             systemContext.setLoading(true);
-
             await api.post(`/shop/equip/${item.id}`, {}, {
                 headers: { 'Authorization': `Bearer ${getTokenCookie()}` }
             });
-
             await refreshUserContext(userContext);
-
         } catch (err: any) {
             alert("Erro ao equipar item.");
             console.error(err);
@@ -45,10 +60,45 @@ export default function PerfilPage() {
         }
     };
 
+    const handleUpdateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (formData.password && formData.password !== formData.confirmPassword) {
+            alert("As senhas não conferem!");
+            return;
+        }
+
+        try {
+            systemContext.setLoading(true);
+
+            const payload: any = {
+                name: formData.name,
+                email: formData.email
+            };
+            if (formData.password) {
+                payload.password = formData.password;
+            }
+
+            await api.put('api/user/update', payload, {
+                headers: { 'Authorization': `Bearer ${getTokenCookie()}` }
+            });
+
+            await refreshUserContext(userContext);
+            setIsEditing(false);
+            alert("Dados atualizados com sucesso!");
+
+        } catch (err: any) {
+            console.error(err);
+            alert(err?.response?.data?.message || "Erro ao atualizar perfil.");
+        } finally {
+            systemContext.setLoading(false);
+        }
+    };
+
     const filteredItems = userContext.items?.filter(item => item.type === activeTab) || [];
 
     return (
-        <div className="min-h-screen bg-[#1f1b1d] text-gray-100 pb-10 font-sans">
+        <div className="min-h-screen bg-[#1f1b1d] text-gray-100 pb-10 font-sans relative">
 
             <header className="bg-[#2d2a2c] shadow-md p-4 mb-8">
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -64,6 +114,7 @@ export default function PerfilPage() {
 
             <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
 
+                {/* COLUNA DA ESQUERDA (CARD DO USUÁRIO) */}
                 <div className="md:col-span-1">
                     <div className="bg-[#2d2a2c] rounded-2xl p-6 shadow-xl border border-gray-700 sticky top-4 text-center">
 
@@ -82,11 +133,22 @@ export default function PerfilPage() {
                         </div>
 
                         <h2 className="text-2xl font-bold text-white mb-1">{userContext.name}</h2>
-                        {userContext.currentTitle && (
-                            <span className="inline-block bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-bold border border-purple-500/30 mb-4">
-                                {userContext.currentTitle}
-                            </span>
-                        )}
+
+                        {/* BOTÃO DE EDITAR PERFIL ADICIONADO AQUI */}
+                        <button
+                            onClick={openEditModal}
+                            className="text-xs text-gray-400 hover:text-teal-400 underline mb-3 transition-colors"
+                        >
+                            Editar Dados ✏️
+                        </button>
+
+                        <div className="block">
+                            {userContext.currentTitle && (
+                                <span className="inline-block bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-bold border border-purple-500/30 mb-4">
+                                    {userContext.currentTitle}
+                                </span>
+                            )}
+                        </div>
 
                         <div className="w-full h-px bg-gray-700 my-4"></div>
 
@@ -113,6 +175,7 @@ export default function PerfilPage() {
                     </div>
                 </div>
 
+                {/* COLUNA DA DIREITA (INVENTÁRIO) */}
                 <div className="md:col-span-2">
                     <div className="bg-[#2d2a2c] rounded-2xl shadow-xl border border-gray-700 overflow-hidden min-h-[500px]">
 
@@ -126,24 +189,9 @@ export default function PerfilPage() {
                         </div>
 
                         <div className="flex border-b border-gray-700 bg-black/20">
-                            <button
-                                onClick={() => setActiveTab('AVATAR')}
-                                className={`flex-1 py-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'AVATAR' ? 'text-teal-400 border-b-2 border-teal-400 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-                            >
-                                Avatares 👤
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('TITLE')}
-                                className={`flex-1 py-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'TITLE' ? 'text-purple-400 border-b-2 border-purple-400 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-                            >
-                                Títulos 👑
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('THEME')}
-                                className={`flex-1 py-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'THEME' ? 'text-blue-400 border-b-2 border-blue-400 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-                            >
-                                Temas 🎨
-                            </button>
+                            <button onClick={() => setActiveTab('AVATAR')} className={`flex-1 py-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'AVATAR' ? 'text-teal-400 border-b-2 border-teal-400 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}>Avatares 👤</button>
+                            <button onClick={() => setActiveTab('TITLE')} className={`flex-1 py-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'TITLE' ? 'text-purple-400 border-b-2 border-purple-400 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}>Títulos 👑</button>
+                            <button onClick={() => setActiveTab('THEME')} className={`flex-1 py-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'THEME' ? 'text-blue-400 border-b-2 border-blue-400 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}>Temas 🎨</button>
                         </div>
 
                         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -161,29 +209,15 @@ export default function PerfilPage() {
 
                                     return (
                                         <div key={item.id} className={`bg-[#1f1b1d] rounded-xl p-4 border transition-all hover:scale-[1.02] ${isEquipped ? 'border-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.3)]' : 'border-gray-700 hover:border-gray-500'}`}>
-
-                                            {/* Visual do Item */}
                                             <div className="h-24 flex items-center justify-center mb-4 bg-black/20 rounded-lg">
                                                 {item.type === 'AVATAR' ? (
                                                     <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-full object-cover border-2 border-gray-600" />
                                                 ) : (
-                                                    <span className="text-sm font-bold text-gray-300 px-2 text-center">
-                                                        {item.image_url}
-                                                    </span>
+                                                    <span className="text-sm font-bold text-gray-300 px-2 text-center">{item.image_url}</span>
                                                 )}
                                             </div>
-
                                             <h4 className="font-bold text-white mb-1 truncate">{item.name}</h4>
-
-                                            <button
-                                                onClick={() => !isEquipped && handleEquip(item)}
-                                                disabled={isEquipped}
-                                                className={`w-full py-2 rounded font-bold text-sm mt-2 transition-colors ${
-                                                    isEquipped
-                                                        ? 'bg-transparent text-teal-400 border border-teal-400 cursor-default'
-                                                        : 'bg-gray-700 hover:bg-teal-600 text-white'
-                                                }`}
-                                            >
+                                            <button onClick={() => !isEquipped && handleEquip(item)} disabled={isEquipped} className={`w-full py-2 rounded font-bold text-sm mt-2 transition-colors ${isEquipped ? 'bg-transparent text-teal-400 border border-teal-400 cursor-default' : 'bg-gray-700 hover:bg-teal-600 text-white'}`}>
                                                 {isEquipped ? 'Equipado ✅' : 'Equipar'}
                                             </button>
                                         </div>
@@ -194,6 +228,83 @@ export default function PerfilPage() {
                     </div>
                 </div>
             </div>
+
+            {isEditing && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="bg-[#2d2a2c] w-full max-w-md rounded-2xl border border-gray-700 shadow-2xl overflow-hidden animate-fade-in">
+                        <div className="p-6 border-b border-gray-700">
+                            <h3 className="text-xl font-bold text-white">Editar Dados Pessoais</h3>
+                            <p className="text-sm text-gray-400">Atualize suas informações de cadastro.</p>
+                        </div>
+
+                        <form onSubmit={handleUpdateUser} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nome de Usuário</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-[#1f1b1d] border border-gray-600 rounded p-3 text-white focus:border-teal-500 focus:outline-none transition"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">E-mail</label>
+                                <input
+                                    type="email"
+                                    className="w-full bg-[#1f1b1d] border border-gray-600 rounded p-3 text-white focus:border-teal-500 focus:outline-none transition"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <hr className="border-gray-700 my-2" />
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nova Senha <span className="text-gray-600 normal-case">(Deixe vazio para manter a atual)</span></label>
+                                <input
+                                    type="password"
+                                    className="w-full bg-[#1f1b1d] border border-gray-600 rounded p-3 text-white focus:border-teal-500 focus:outline-none transition"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    placeholder="••••••"
+                                />
+                            </div>
+
+                            {formData.password && (
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Confirmar Nova Senha</label>
+                                    <input
+                                        type="password"
+                                        className="w-full bg-[#1f1b1d] border border-gray-600 rounded p-3 text-white focus:border-teal-500 focus:outline-none transition"
+                                        value={formData.confirmPassword}
+                                        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                                        placeholder="••••••"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditing(false)}
+                                    className="flex-1 py-3 rounded font-bold text-gray-400 hover:bg-gray-700 transition"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-3 rounded font-bold bg-teal-500 text-white hover:bg-teal-600 transition shadow-lg shadow-teal-500/20"
+                                >
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

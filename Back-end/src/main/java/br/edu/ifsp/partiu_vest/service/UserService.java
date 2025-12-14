@@ -96,4 +96,26 @@ public class UserService {
         return repository.findAllByOrderByStreakDesc(pageable)
                 .map(UserPublicDataResponse::from);
     }
+
+    public void updateUser(Long userId, UserUpdateRequest dto) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
+
+        if (dto.getName() != null && !dto.getName().isBlank()) {
+            user.setName(dto.getName());
+        }
+
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            if (!dto.getEmail().equals(user.getEmail()) && repository.existsByEmail(dto.getEmail())) {
+                throw new EmailAlreadyUsedException("Este e-mail já está em uso.");
+            }
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(encoder.encode(dto.getPassword()));
+        }
+
+        repository.save(user);
+    }
 }

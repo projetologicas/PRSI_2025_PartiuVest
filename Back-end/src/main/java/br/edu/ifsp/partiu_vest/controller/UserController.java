@@ -1,9 +1,6 @@
 package br.edu.ifsp.partiu_vest.controller;
 
-import br.edu.ifsp.partiu_vest.dto.UserDataRequest;
-import br.edu.ifsp.partiu_vest.dto.UserDataResponse;
-import br.edu.ifsp.partiu_vest.dto.UserPublicDataResponse;
-import br.edu.ifsp.partiu_vest.dto.UserResponse;
+import br.edu.ifsp.partiu_vest.dto.*;
 import br.edu.ifsp.partiu_vest.model.User;
 import br.edu.ifsp.partiu_vest.service.AttemptService;
 import br.edu.ifsp.partiu_vest.service.UserService;
@@ -48,6 +45,16 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(service.getStreakRanking(page, size));
+    }
+
+    @PutMapping("/user/update")
+    public ResponseEntity<Void> updateUserData(
+            @RequestBody UserUpdateRequest dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        service.updateUser(currentUser.getId(), dto);
+
+        return ResponseEntity.ok().build();
     }
 }
 
