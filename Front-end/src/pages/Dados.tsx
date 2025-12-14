@@ -46,9 +46,16 @@ export default function PerfilPage() {
             await api.post(`/shop/equip/${item.id}`, {}, {
                 headers: { 'Authorization': `Bearer ${getTokenCookie()}` }
             });
-            await refreshUserContext(userContext);
+
+            if (item.type === 'THEME') {
+                window.location.reload();
+            } else {
+                await refreshUserContext(userContext);
+            }
+
         } catch (err: any) {
-            alert("Não foi possível equipar o item.");
+            alert("Erro ao equipar item.");
+            console.error(err);
         } finally {
             systemContext.setLoading(false);
         }
