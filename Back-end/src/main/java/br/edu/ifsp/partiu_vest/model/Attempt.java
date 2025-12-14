@@ -19,10 +19,7 @@ public class Attempt {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
-    @JoinTable(name = "attempt_question",
-            joinColumns = @JoinColumn(name = "attempt_id"),
-            inverseJoinColumns = @JoinColumn(name = "id"))
+    @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AttemptQuestion> questions;
 
     @Column
