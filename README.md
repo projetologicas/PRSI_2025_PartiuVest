@@ -31,7 +31,3 @@ Abaixo estão os membros que tornaram o Partiu Vest possível:
 | **[Guilherme Fragiacomo]** | Desenvolvedor Full Stack | [https://www.linkedin.com/in/guilherme-fragiacomo-9739a4271//https://github.com/guilhermefragiacomo] |
 | **[Deivid Brito]** | Desenvolvedor Full Stack | [https://www.linkedin.com/in/deividpbrito//https://github.com/deividbrito] |
 | **[Luiz Francisco Junior]** | Desenvolvedor Frontend e UI/UX | [https://www.linkedin.com/in/luiz-francisco-rodrigues-junior-a36711265//https://github.com/Luiz-frj] |
-
-
-```html
-<img src="URL_DA_SUA_IMAGEM.jpg" alt="Foto de [Seu Nome]" width="150" height="150">
