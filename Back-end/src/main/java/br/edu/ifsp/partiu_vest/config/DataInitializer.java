@@ -31,24 +31,24 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("🛒 Criando itens da loja e Temas...");
 
             itemRepository.saveAll(Arrays.asList(
-                    new Item("Robô da NASA", "https://api.dicebear.com/9.x/bottts/svg?seed=Nasa", ItemType.AVATAR, 100),
-                    new Item("Aventureiro", "https://api.dicebear.com/9.x/adventurer/svg?seed=Felix", ItemType.AVATAR, 250),
-                    new Item("Gamer 8-bit", "https://api.dicebear.com/9.x/pixel-art/svg?seed=Gamer", ItemType.AVATAR, 500),
-                    new Item("Monstrinho Roxo", "https://api.dicebear.com/9.x/fun-emoji/svg?seed=Spooky", ItemType.AVATAR, 800),
-                    new Item("Hacker Anônimo", "https://api.dicebear.com/9.x/identicon/svg?seed=Hacker", ItemType.AVATAR, 150)
+                    new Item("Robô da NASA", "https://api.dicebear.com/9.x/bottts/svg?seed=Nasa", ItemType.AVATAR, 1),
+                    new Item("Aventureiro", "https://api.dicebear.com/9.x/adventurer/svg?seed=Felix", ItemType.AVATAR, 1),
+                    new Item("Gamer 8-bit", "https://api.dicebear.com/9.x/pixel-art/svg?seed=Gamer", ItemType.AVATAR, 1),
+                    new Item("Monstrinho Roxo", "https://api.dicebear.com/9.x/fun-emoji/svg?seed=Spooky", ItemType.AVATAR, 1),
+                    new Item("Hacker Anônimo", "https://api.dicebear.com/9.x/identicon/svg?seed=Hacker", ItemType.AVATAR, 1)
             ));
 
             itemRepository.saveAll(Arrays.asList(
-                    new Item("Novato Dedicado", "Novato Dedicado 📚", ItemType.TITLE, 50),
-                    new Item("O Vestibulando", "O Vestibulando 🎓", ItemType.TITLE, 200),
-                    new Item("Mestre do Java", "Mestre do Java ☕", ItemType.TITLE, 1000),
-                    new Item("Gênio da Matemática", "Gênio da Matemática 📐", ItemType.TITLE, 1500)
+                    new Item("Novato Dedicado", "Novato Dedicado 📚", ItemType.TITLE, 1),
+                    new Item("O Vestibulando", "O Vestibulando 🎓", ItemType.TITLE, 1),
+                    new Item("Mestre do Java", "Mestre do Java ☕", ItemType.TITLE, 1),
+                    new Item("Gênio da Matemática", "Gênio da Matemática 📐", ItemType.TITLE, 1)
             ));
 
             itemRepository.saveAll(Arrays.asList(
-                    new Item("Modo Claro", "light", ItemType.THEME, 50),
-                    new Item("Matrix", "matrix", ItemType.THEME, 50),
-                    new Item("Cyberpunk Neon", "neon", ItemType.THEME, 50)
+                    new Item("Modo Claro", "light", ItemType.THEME, 1),
+                    new Item("Matrix", "matrix", ItemType.THEME, 1),
+                    new Item("Cyberpunk Neon", "neon", ItemType.THEME, 1)
             ));
 
             System.out.println("✅ Loja populada com sucesso!");

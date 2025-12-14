@@ -136,4 +136,35 @@ public class AttemptController {
     public ResponseEntity<AttemptResponse> finishAttempt(@RequestBody AttemptRequest dto) {
         return ResponseEntity.ok(attempt_service.finishAttempt(dto.getId()));
     }
+
+    @GetMapping("/question_book_user")
+    @Operation(summary = "Listar Tentativas por Usuário e Caderno",
+            description = "Retorna todas as tentativas de um usuário específico em um caderno.")
+    public ResponseEntity<List<AttemptResponse>> getAttemptsByQuestionBookUser(
+            @RequestParam Long question_book_id,
+            @AuthenticationPrincipal User user) {
+
+        List<Attempt> attempts = attempt_service.getAttemptsByQuestionBookUser(question_book_id, user);
+
+        List<AttemptResponse> response = attempts.stream()
+                .map(AttemptResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/attempted_questions")
+    @Operation(summary = "Detalhes das Questões da Tentativa",
+            description = "Retorna a lista detalhada de respostas de uma tentativa específica.")
+    public ResponseEntity<List<AttemptQuestionResponse>> getAttemptedQuestions(
+            @RequestParam Long attempt_book_id) {
+
+        List<AttemptQuestion> questions = attempt_service.getQuestionsByAttempt(attempt_book_id);
+
+        List<AttemptQuestionResponse> response = questions.stream()
+                .map(AttemptQuestionResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
 }

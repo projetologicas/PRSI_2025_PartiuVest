@@ -12,29 +12,17 @@ export default function HomeNavBarADM() {
 
     return (
         <div className="w-full max-w-7xl mx-auto mb-8">
-            <div className="bg-[#1f2937] rounded-xl p-4 flex flex-col md:flex-row items-center justify-between border border-gray-700 shadow-2xl gap-4">
+            <div className="bg-[#1f2937] rounded-xl px-6 py-4 flex flex-col md:flex-row items-center justify-between border border-gray-700 shadow-xl gap-4">
 
-                {/* 1. ÁREA DA ESQUERDA: LOGO E VOLTAR */}
-                <div className="flex items-center gap-4">
-                    {/* Botão para voltar à visão de usuário normal */}
-                    <Link to="/home" className="flex items-center gap-2 group" title="Sair do modo Admin e ir para Home">
-                        <div className="bg-gray-800 p-2 rounded-full border border-gray-600 group-hover:border-teal-400 transition-colors">
-                            <span className="text-gray-400 group-hover:text-teal-400">⬅</span>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-teal-400 font-bold text-lg leading-none">PartiuVest</span>
-                            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest group-hover:text-gray-300">Voltar ao Site</span>
-                        </div>
+                {/* 1. ÁREA DA ESQUERDA: VOLTAR SIMPLES */}
+                <div className="flex items-center">
+                    <Link
+                        to="/home"
+                        className="text-teal-400 hover:text-teal-300 font-bold text-sm uppercase tracking-wide transition-colors flex items-center gap-2"
+                        title="Sair do modo Admin"
+                    >
+                        <span>⬅ Voltar à Plataforma</span>
                     </Link>
-
-                    {/* Separador vertical */}
-                    <div className="h-8 w-px bg-gray-700 hidden md:block"></div>
-
-                    {/* Badge de Admin */}
-                    <div className="hidden md:flex items-center gap-2 bg-red-500/10 border border-red-500/30 px-3 py-1 rounded">
-                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                        <span className="text-red-400 text-xs font-bold uppercase tracking-wider">Modo Admin</span>
-                    </div>
                 </div>
 
                 {/* 2. ÁREA CENTRAL: MENU DE NAVEGAÇÃO */}
@@ -72,9 +60,9 @@ export default function HomeNavBarADM() {
                 <div>
                     <button
                         onClick={handleLogout}
-                        className="text-red-400 hover:text-white hover:bg-red-600 text-xs font-bold border border-red-900 bg-red-900/20 px-4 py-2 rounded transition-all shadow-lg"
+                        className="text-red-400 hover:text-white hover:bg-red-600/80 text-xs font-bold border border-red-900/50 bg-red-900/10 px-4 py-2 rounded transition-all"
                     >
-                        SAIR (LOGOUT)
+                        LOGOUT
                     </button>
                 </div>
             </div>
