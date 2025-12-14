@@ -10,6 +10,8 @@ import br.edu.ifsp.partiu_vest.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager; // Novo Import
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // Novo Import
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final UserService userService;
     private final JwtService jwtService;
-    public AuthController(UserService userService, JwtService jwtService) {
+    private final AuthenticationManager authenticationManager;
+
+    public AuthController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
+
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest dto) {
         UserResponse response = userService.register(dto);
@@ -35,12 +41,17 @@ public class AuthController {
         }
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest dto) {
-        User user = userService.checkCredentialsAndReturnUser(dto);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
+        );
+
+        User user = (User) authentication.getPrincipal();
+
         String token = jwtService.generateToken(user);
         return ResponseEntity.ok(new AuthResponse(token));
-
     }
 
     @GetMapping("/me")
