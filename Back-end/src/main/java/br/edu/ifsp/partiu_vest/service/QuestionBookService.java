@@ -1,6 +1,8 @@
 package br.edu.ifsp.partiu_vest.service;
 
+import br.edu.ifsp.partiu_vest.dto.ExamJsonDTO;
 import br.edu.ifsp.partiu_vest.dto.QuestionBookDTO; // ou QuestionBookRequestDTO se tiver alterado
+import br.edu.ifsp.partiu_vest.dto.QuestionJsonDTO;
 import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
 import br.edu.ifsp.partiu_vest.repository.QuestionBookRepository;
@@ -95,5 +97,40 @@ public class QuestionBookService {
         newBook.setQuestions(questions);
 
         return question_book_repository.save(newBook);
+    }
+
+    @Transactional
+    public QuestionBook createExamFromJSON(ExamJsonDTO dto) {
+        QuestionBook book = new QuestionBook();
+        book.setModel(dto.title());
+        book.setCreation_date();
+        book.setR_generated(false);
+
+        QuestionBook savedBook = question_book_repository.save(book);
+
+        Set<Question> questions = new HashSet<>();
+        int questionNumber = 1;
+
+        for (QuestionJsonDTO qDto : dto.questions()) {
+            Question q = new Question(
+                    questionNumber++,
+                    qDto.statement(),
+                    qDto.explanation(),
+                    qDto.optionA(),
+                    qDto.optionB(),
+                    qDto.optionC(),
+                    qDto.optionD(),
+                    qDto.optionE(),
+                    dto.title()
+            );
+
+            q.setQuestion_book(savedBook);
+            questions.add(q);
+        }
+
+        question_repository.saveAll(questions);
+
+        savedBook.setQuestions(questions);
+        return question_book_repository.save(savedBook);
     }
 }
