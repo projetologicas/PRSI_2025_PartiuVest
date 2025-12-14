@@ -29,6 +29,9 @@ public class User {
     @Column(nullable = false)
     private int streak;
 
+    @Column(name = "last_streak_date")
+    private java.time.LocalDate lastStreakDate;
+
     @Column(nullable = false)
     private int points;
 
@@ -42,7 +45,6 @@ public class User {
     @Column(nullable = false)
     private Boolean enabled;
 
-    // --- NOVOS CAMPOS: Itens Equipados ---
     @Column(name = "current_avatar_url")
     private String currentAvatarUrl;
 
@@ -52,8 +54,6 @@ public class User {
     @Column(name = "current_theme")
     private String currentTheme;
 
-    // --- INVENTÁRIO (Relacionamento ManyToMany) ---
-    // Alterei o nome da tabela intermediária para 'user_inventory' para não conflitar com a tabela 'item'
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_inventory",
@@ -145,8 +145,20 @@ public class User {
         }
     }
 
+    public void setStreak(int streak) {
+        this.streak = streak;
+    }
+
     public void resetStreak(){
         this.streak = 0;
+    }
+
+    public java.time.LocalDate getLastStreakDate() {
+        return lastStreakDate;
+    }
+
+    public void setLastStreakDate(java.time.LocalDate lastStreakDate) {
+        this.lastStreakDate = lastStreakDate;
     }
 
     public int getPoints() {
@@ -154,11 +166,7 @@ public class User {
     }
 
     public void setPoints(int points) {
-        if(points != 0){
-            this.points += points;
-        } else{
-            this.points = 0;
-        }
+        this.points = points;
     }
 
     public int getXp() {
@@ -166,11 +174,7 @@ public class User {
     }
 
     public void setXp(int xp) {
-        if(xp != 0){
-            this.xp += xp;
-        } else{
-            this.xp = 0;
-        }
+        this.xp = xp;
     }
 
     public Set<Item> getItems() {

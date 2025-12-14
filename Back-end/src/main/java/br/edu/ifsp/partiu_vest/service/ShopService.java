@@ -32,6 +32,7 @@ public class ShopService {
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+
         if (user.getItems().contains(item)) {
             throw new IllegalStateException("Você já possui este item!");
         }
@@ -41,12 +42,14 @@ public class ShopService {
         }
 
         user.setPoints(user.getPoints() - item.getPrice());
+
         user.getItems().add(item);
 
         if (item.getType() == ItemType.AVATAR) {
             user.setCurrentAvatarUrl(item.getImage_url());
         } else if (item.getType() == ItemType.TITLE) {
             user.setCurrentTitle(item.getImage_url());
+        } else if (item.getType() == ItemType.THEME) {
         }
 
         return userRepository.save(user);
