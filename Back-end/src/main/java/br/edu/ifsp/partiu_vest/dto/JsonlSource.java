@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class JsonlSource {
-    private String id; // Ex: "questao_01"
+    private String id;
     private String exam;
-    private String question; // Mapeia para Question.title (enunciado)
-    private List<String> description; // Mapeia para Question.image_desc (lista de descrições)
+    private String question;
+    private List<String> description;
 
     @JsonProperty("alternatives")
     private List<String> alternatives;

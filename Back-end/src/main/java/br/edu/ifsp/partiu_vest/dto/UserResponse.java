@@ -3,11 +3,22 @@ package br.edu.ifsp.partiu_vest.dto;
 import br.edu.ifsp.partiu_vest.model.User;
 import br.edu.ifsp.partiu_vest.model.enums.Role;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Objeto de resposta básico do usuário, contendo apenas dados essenciais de identificação e permissão. Usado em login/cadastro e /auth/me.")
 public class UserResponse {
+    @Schema(description = "ID único do usuário.", example = "1")
     private Long id;
+
+    @Schema(description = "Nome de exibição do usuário.", example = "Maria Silva")
     private String name;
+
+    @Schema(description = "E-mail do usuário.", example = "aluno@partiuvest.com.br")
     private String email;
+
+    @Schema(description = "Nível de permissão (ROLE) do usuário.", example = "USER")
     private Role role;
+
     public static UserResponse from(User user) {
         var response = new UserResponse();
         response.id = user.getId();
@@ -26,7 +37,6 @@ public class UserResponse {
 
     public UserResponse() {
     }
-
     public Long getId() {
         return id;
     }
