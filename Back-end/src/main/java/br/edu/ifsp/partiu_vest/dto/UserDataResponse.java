@@ -2,7 +2,6 @@ package br.edu.ifsp.partiu_vest.dto;
 
 import br.edu.ifsp.partiu_vest.model.Item;
 import br.edu.ifsp.partiu_vest.model.User;
-import br.edu.ifsp.partiu_vest.model.enums.Role;
 
 import java.util.Date;
 import java.util.Set;
@@ -33,7 +32,7 @@ public class UserDataResponse {
     private int xp;
 
     @Schema(description = "Nível de permissão do usuário.", example = "USER")
-    private Role role;
+    private String role;
 
     @Schema(description = "Lista completa de itens cosméticos que o usuário possui.")
     private Set<Item> items;
@@ -60,7 +59,13 @@ public class UserDataResponse {
         response.setStreak(user.getStreak());
         response.setPoints(user.getPoints());
         response.setXp(user.getXp());
-        response.setRole(user.getRole());
+
+        // --- MUDANÇA 2: Extraindo o nome do Enum (.name()) ---
+        if (user.getRole() != null) {
+            response.setRole(user.getRole().name());
+        } else {
+            response.setRole("USER"); // Fallback de segurança
+        }
 
         response.setItems(user.getItems());
         response.setCurrentAvatarUrl(user.getCurrentAvatarUrl());
@@ -91,8 +96,8 @@ public class UserDataResponse {
     public int getXp() { return xp; }
     public void setXp(int xp) { this.xp = xp; }
 
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
     public Set<Item> getItems() { return items; }
     public void setItems(Set<Item> items) { this.items = items; }

@@ -7,6 +7,7 @@ import br.edu.ifsp.partiu_vest.repository.ItemRepository;
 import br.edu.ifsp.partiu_vest.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import br.edu.ifsp.partiu_vest.dto.ItemRequestDTO;
 
 import java.util.List;
 
@@ -74,5 +75,16 @@ public class ShopService {
         }
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public Item createItem(ItemRequestDTO dto) {
+        Item item = new Item();
+        item.setName(dto.name());
+        item.setPrice(dto.price());
+        item.setType(dto.type());
+        item.setImage_url(dto.imageUrl());
+
+        return itemRepository.save(item);
     }
 }

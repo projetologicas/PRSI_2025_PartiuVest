@@ -6,16 +6,18 @@ import NotFound from "./pages/NotFound";
 import { SystemProvider } from "./common/context/SystemContext";
 import { AttemptProvider } from "./common/context/AttemptContext";
 import ProtectedRoute from "./common/security/ProtectedRoute";
-import AdminRoute from "./common/security/AdminRoute"; // << NOVO COMPONENTE DE PROTEÇÃO DE ADMIN
-import AdminTestPage from "./pages/AdminTestPage"; // << PÁGINA DE TESTE QUE CHAMA O BACKEND
+import AdminRoute from "./common/security/AdminRoute";
 import HomeAluno from "./pages/HomeAluno";
-import HomeADM from "./pages/HomeADM";
+import AdminCreateUser from "./pages/AdminCreateUser";
+import AdminCreateItem from "./pages/AdminCreateItem";
+import AdminUploadExam from "./pages/AdminUploadExam";
 import Leaderboard from "./pages/Leaderboard";
 import Dados from "./pages/Dados";
 import Vestibulares from "./pages/Vest";
 import QuestionBookDetails from "./pages/QuestionBookDetails";
 import QuestionPage from "./pages/QuestionPage";
 import ShopPage from "./pages/ShopPage.tsx";
+import AdminHome from "./pages/HomeADM";
 
 function Router() {
     return (
@@ -29,8 +31,7 @@ function Router() {
 
                         {/* BLOCO 1: Rotas Protegidas (Exige apenas Token - USER ou ADMIN) */}
                         <Route element={<ProtectedRoute />}>
-                            <Route path="/home" element={<HomeAluno />} />
-                            <Route path="/home_adm" element={<HomeADM />} /> {/* Note: Esta rota deveria usar AdminRoute se for exclusiva de admin */}
+                            <Route path="/home" element={<HomeAluno />} />=
                             <Route path="/leaderboard" element={<Leaderboard />} />
                             <Route path="/profile" element={<Dados />}/>
 
@@ -44,7 +45,10 @@ function Router() {
 
                         {/* BLOCO 2: Rotas Protegidas EXCLUSIVAMENTE para ADMIN */}
                         <Route element={<AdminRoute />}>
-                            <Route path="/admin/status" element={<AdminTestPage />} />
+                            <Route path="/admin" element={<AdminHome />} />
+                            <Route path="/admin/users" element={<AdminCreateUser />} />
+                            <Route path="/admin/items" element={<AdminCreateItem />} />
+                            <Route path="/admin/exams" element={<AdminUploadExam />} />
                         </Route>
 
                         {/* Rota 404 */}
