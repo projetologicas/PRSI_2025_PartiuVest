@@ -1,4 +1,4 @@
-import { useState, createContext } from 'react';
+import { useState, createContext, useEffect } from 'react'; // << Adicionado useEffect
 import api from '../../services/api';
 import { getTokenCookie } from '../../services/Cookies';
 import type {ShopItem} from '../../types/ShopItem';
@@ -32,6 +32,10 @@ export const UserContext = createContext({
     setSignDate: (sign_date: Date) => { },
     role: "",
     setRole: (role: string) => { },
+    
+    // NOVO CAMPO DE ESTADO DE CARREGAMENTO
+    isLoading: true,
+    setIsLoading: (loading: boolean) => {},
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -51,30 +55,53 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [rank, setRank] = useState("");
     const [sign_date, setSignDate] = useState(new Date());
     const [role, setRole] = useState("");
+    
+    // NOVO ESTADO: Inicia como true
+    const [isLoading, setIsLoading] = useState(true); 
+
+    // Cria o objeto de valor do contexto para ser usado dentro do useEffect
+    const contextValue = {
+        name, setName,
+        points, setPoints,
+        items, setItems,
+        currentAvatar, setCurrentAvatar,
+        currentTitle, setCurrentTitle,
+        currentTheme, setCurrentTheme,
+        email, setEmail,
+        password, setPassword,
+        streak, setStreak,
+        xp, setXp,
+        exerciciosFeitos, setExerciciosFeitos,
+        rank, setRank,
+        sign_date, setSignDate,
+        role, setRole,
+        isLoading, setIsLoading
+    };
+
+    // BLOCO CRÍTICO: Dispara o carregamento dos dados
+    useEffect(() => {
+        const token = getTokenCookie();
+        if (token) {
+            // Se há um token, carrega os dados
+            refreshUserContext(contextValue);
+        } else {
+            // Se não há token, não há dados para carregar, marca como pronto.
+            setIsLoading(false);
+        }
+    }, []); // Array de dependência vazio garante que roda apenas na montagem
 
     return (
-        <UserContext.Provider value={{
-            name, setName,
-            points, setPoints,
-            items, setItems,
-            currentAvatar, setCurrentAvatar,
-            currentTitle, setCurrentTitle,
-            currentTheme, setCurrentTheme,
-            email, setEmail,
-            password, setPassword,
-            streak, setStreak,
-            xp, setXp,
-            exerciciosFeitos, setExerciciosFeitos,
-            rank, setRank,
-            sign_date, setSignDate,
-            role, setRole
-        }}>
+        <UserContext.Provider value={contextValue}>
             {children}
         </UserContext.Provider>
     )
 }
 
+// FUNÇÃO CRÍTICA: Responsável por setar o estado de carregamento como false
 export const refreshUserContext = async (userContext: any) => {
+    // É bom garantir que, ao chamar essa função, o loading esteja true
+    userContext.setIsLoading(true); 
+
     try {
         const userResp = await api.get("/api/data", {
             headers: {
@@ -98,5 +125,8 @@ export const refreshUserContext = async (userContext: any) => {
 
     } catch (error) {
         console.error("Erro ao atualizar contexto:", error);
+    } finally {
+        // ESSENCIAL: Sinaliza que o carregamento terminou, liberando o AdminRoute.
+        userContext.setIsLoading(false); 
     }
 }

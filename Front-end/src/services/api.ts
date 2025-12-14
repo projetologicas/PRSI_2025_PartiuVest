@@ -32,5 +32,9 @@ export const getStreakLeaderboard = async (page: number, size: number) => {
     const response = await api.get<Page<User>>(`api/leaderboard/streak?page=${page}&size=${size}`, getAuthHeaders());
     return response.data;
 };
+export const getAdminStatus = async () => {
+    const response = await api.get<string>('admin/status', getAuthHeaders());
+    return response.data; 
+};
 
 export default api;
