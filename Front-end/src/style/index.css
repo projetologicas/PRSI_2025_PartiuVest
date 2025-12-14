@@ -1,5 +1,43 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+:root {
+    --theme-bg: #1e1b1c;
+    --theme-card: #2d2a2c;
+    --theme-text: #ffffff;
+    --theme-subtext: #9ca3af;
+    --theme-accent: #14b8a6;
+    --theme-border: #374151;
+}
+
+[data-theme='light'] {
+    --theme-bg: #f3f4f6;
+    --theme-card: #ffffff;
+    --theme-text: #111827;
+    --theme-subtext: #4b5563;
+    --theme-accent: #0d9488;
+    --theme-border: #e5e7eb;
+}
+
+[data-theme='matrix'] {
+    --theme-bg: #000000;
+    --theme-card: #0a1a0a;
+    --theme-text: #00ff41;
+    --theme-subtext: #008f11;
+    --theme-accent: #00ff41;
+    --theme-border: #003b00;
+}
+
+/* TEMA NEON (ID: 'neon') */
+[data-theme='neon'] {
+    --theme-bg: #0f0a1e;
+    --theme-card: #1a103c;
+    --theme-text: #e0e7ff;
+    --theme-subtext: #818cf8;
+    --theme-accent: #d946ef;
+    --theme-border: #4c1d95;
+}
 
 button {
     cursor: pointer;
