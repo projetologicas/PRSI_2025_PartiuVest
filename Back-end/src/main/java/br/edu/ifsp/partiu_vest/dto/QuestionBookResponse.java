@@ -8,11 +8,23 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Objeto de resposta contendo os detalhes básicos de um 'Question Book'.")
 public class QuestionBookResponse {
+    @Schema(description = "ID único do Caderno de Questões.", example = "5")
     private Long id;
+
+    @Schema(description = "Data de criação do caderno.", example = "2023-11-20")
     private Date creation_date;
+
+    @Schema(description = "Modelo ou descrição do caderno (ex: 'Simulado ENEM 2022').", example = "Simulado Matemática ENEM")
     private String model;
+
+    @Schema(description = "Indica se o caderno foi gerado aleatoriamente (randomly generated).", example = "true")
     boolean r_generated;
+
+    @Schema(description = "Lista de IDs das questões que compõem este caderno.")
     private Set<Long> questions_id;
 
     public static QuestionBookResponse from(QuestionBook questionBook) {

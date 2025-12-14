@@ -7,12 +7,26 @@ import br.edu.ifsp.partiu_vest.model.User;
 import java.time.LocalDate;
 import java.util.Date;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Objeto de resposta com os detalhes de uma questão dentro de uma tentativa (inclui o gabarito).")
 public class AttemptQuestionResponse {
+    @Schema(description = "ID único da relação Questão-Tentativa (AttemptQuestion).", example = "205")
     private Long id;
+
+    @Schema(description = "ID da questão original.", example = "50")
     private Long question_id;
+
+    @Schema(description = "ID da tentativa (Attempt) à qual pertence.", example = "101")
     private Long attempt_id;
+
+    @Schema(description = "Resposta que o usuário forneceu.", example = "C")
     private String user_answer;
+
+    @Schema(description = "Gabarito da questão.", example = "A")
     private String right_answer;
+
+    @Schema(description = "Data em que esta questão foi respondida.", example = "2023-11-20")
     private LocalDate date;
 
     public AttemptQuestionResponse(Long id, Long question_id, Long attempt, String user_answer, String right_answer) {
@@ -25,7 +39,7 @@ public class AttemptQuestionResponse {
     }
 
     public static AttemptQuestionResponse from(AttemptQuestion attemptQuestion) {
-        AttemptQuestionResponse response = new AttemptQuestionResponse();
+        var response = new AttemptQuestionResponse();
         response.id = attemptQuestion.getId();
         response.attempt_id = attemptQuestion.getAttempt().getId();
         response.question_id = attemptQuestion.getQuestion().getId();

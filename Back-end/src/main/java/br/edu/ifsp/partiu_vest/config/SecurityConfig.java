@@ -38,8 +38,12 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+// 🚨 LINHA CORRIGIDA: Adicione "/webjars/**" e "/error"
+                                .requestMatchers("/v3/api-docs/**", "/v3/api-docs", "/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/error").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
+
                         .requestMatchers("/question_book/**").authenticated()
                         .anyRequest().authenticated()
                 )

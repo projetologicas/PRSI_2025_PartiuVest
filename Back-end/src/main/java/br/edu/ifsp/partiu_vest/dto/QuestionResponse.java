@@ -4,19 +4,45 @@ import br.edu.ifsp.partiu_vest.model.Question;
 import br.edu.ifsp.partiu_vest.model.QuestionBook;
 import jakarta.persistence.Column;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Objeto de resposta contendo todos os dados de uma questão, incluindo gabarito e alternativas.")
 public class QuestionResponse {
+    @Schema(description = "ID único da questão.", example = "10")
     private Long id;
+
+    @Schema(description = "Enunciado da questão (corpo do texto principal).", example = "Qual é a capital do Brasil?")
     private String title;
+
+    @Schema(description = "Descrição ou URL de imagem/mídia associada à questão, se houver.", example = "http://imagem.com/grafico1.png", nullable = true)
     private String image_desc;
+
+    @Schema(description = "Texto da Alternativa A.", example = "São Paulo")
     private String enum_a;
+
+    @Schema(description = "Texto da Alternativa B.", example = "Rio de Janeiro")
     private String enum_b;
+
+    @Schema(description = "Texto da Alternativa C.", example = "Brasília")
     private String enum_c;
+
+    @Schema(description = "Texto da Alternativa D.", example = "Salvador")
     private String enum_d;
+
+    @Schema(description = "Texto da Alternativa E.", example = "Belo Horizonte", nullable = true)
     private String enum_e;
+
+    @Schema(description = "Gabarito da questão (A, B, C, D ou E). Nota: Este campo é sensível e pode ser omitido em endpoints públicos.", example = "C")
     private String answer;
+
+    @Schema(description = "Número sequencial da questão dentro do caderno de origem.", example = "1")
     private int number;
+
+    @Schema(description = "ID do Question Book original que contém esta questão.", example = "5")
     private Long original_question_book_id;
 
+    // Métodos (from, construtores, getters e setters - Mantidos)
+    // ...
     public static QuestionResponse from(Question question) {
         var response = new QuestionResponse();
         response.id = question.getId();
@@ -52,6 +78,22 @@ public class QuestionResponse {
 
     public Long getOriginal_question_book_id() {
         return original_question_book_id;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public String getEnum_e() {
+        return enum_e;
+    }
+
+    public void setEnum_e(String enum_e) {
+        this.enum_e = enum_e;
     }
 
     public void setOriginal_question_book_id(Long original_question_book_id) {
@@ -120,21 +162,5 @@ public class QuestionResponse {
 
     public void setEnum_d(String enum_d) {
         this.enum_d = enum_d;
-    }
-
-    public String getEnum_e() {
-        return enum_e;
-    }
-
-    public void setEnum_e(String enum_e) {
-        this.enum_e = enum_e;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
     }
 }
