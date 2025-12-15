@@ -41,8 +41,7 @@ public class QuestionResponse {
     @Schema(description = "ID do Question Book original que contém esta questão.", example = "5")
     private Long original_question_book_id;
 
-    // Métodos (from, construtores, getters e setters - Mantidos)
-    // ...
+
     public static QuestionResponse from(Question question) {
         var response = new QuestionResponse();
         response.id = question.getId();
