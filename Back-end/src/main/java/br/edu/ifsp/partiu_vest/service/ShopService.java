@@ -28,10 +28,24 @@ public class ShopService {
 
     @Transactional
     public void deleteItem(Long id) {
-        if (!itemRepository.existsById(id)) {
-            throw new RuntimeException("Item não encontrado para exclusão.");
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado para exclusão."));
+        List<User> owners = userRepository.findByItemsId(id);
+        for (User user : owners) {
+            user.getItems().remove(item);
+            if (item.getImage_url().equals(user.getCurrentAvatarUrl())) {
+                user.setCurrentAvatarUrl(null); // ou URL padrão
+            }
+            if (item.getImage_url().equals(user.getCurrentTitle())) {
+                user.setCurrentTitle(null);
+            }
+            if (item.getImage_url().equals(user.getCurrentTheme())) {
+                user.setCurrentTheme(null);
+            }
+            userRepository.save(user);
         }
-        itemRepository.deleteById(id);
+
+        itemRepository.delete(item);
     }
 
     @Transactional
