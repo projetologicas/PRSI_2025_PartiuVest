@@ -25,8 +25,11 @@ public class QuestionBook {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question_book")
+    // --- CORREÇÃO AQUI ---
+    // Adicionado cascade e orphanRemoval para permitir a exclusão
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question_book", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Attempt> attempts;
+    // ---------------------
 
     @ManyToMany
     @JoinTable(
@@ -52,6 +55,7 @@ public class QuestionBook {
     public QuestionBook() {
     }
 
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -84,7 +88,6 @@ public class QuestionBook {
         this.r_generated = r_generated;
     }
 
-    // --- Getters e Setters do User ---
     public User getUser() {
         return user;
     }
