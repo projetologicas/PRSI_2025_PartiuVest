@@ -38,8 +38,7 @@ public class AdminController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Acesso concedido com sucesso",
                     content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)",
-                    content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
     })
     @GetMapping("/status")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -54,8 +53,7 @@ public class AdminController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário criado com sucesso",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos",
-                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
     })
     @PostMapping("/users")
@@ -96,12 +94,26 @@ public class AdminController {
         return ResponseEntity.ok("Simulado importado com sucesso!");
     }
 
+    @Operation(summary = "Lista todos os usuários",
+            description = "Retorna uma lista completa de todos os usuários cadastrados no sistema. Requer permissão 'ADMIN'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
+    })
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
+    @Operation(summary = "Deleta um usuário por ID",
+            description = "Remove permanentemente um usuário do sistema. Requer permissão 'ADMIN'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso (No Content)"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
+    })
     @DeleteMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -109,6 +121,13 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Deleta um item da loja por ID",
+            description = "Remove um item cosmético ou funcional da loja. Requer permissão 'ADMIN'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Item deletado com sucesso (No Content)"),
+            @ApiResponse(responseCode = "404", description = "Item não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
+    })
     @DeleteMapping("/items/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
@@ -116,6 +135,16 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Atualiza dados de um usuário",
+            description = "Permite a atualização de dados específicos de um usuário por um administrador. Requer permissão 'ADMIN'.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do usuário a serem atualizados",
+            required = true, content = @Content(schema = @Schema(implementation = UserUpdateRequest.class)))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados de atualização inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
+    })
     @PutMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> updateUserAdmin(@PathVariable Long id, @RequestBody UserUpdateRequest dto) {
@@ -123,6 +152,16 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Atualiza um item da loja",
+            description = "Permite a atualização dos detalhes (nome, preço, etc.) de um item da loja por ID. Requer permissão 'ADMIN'.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Novos dados do item",
+            required = true, content = @Content(schema = @Schema(implementation = ItemRequestDTO.class)))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Item não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados de atualização inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso Negado (Não é ADMIN)")
+    })
     @PutMapping("/items/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> updateItem(@PathVariable Long id, @RequestBody ItemRequestDTO dto) {
