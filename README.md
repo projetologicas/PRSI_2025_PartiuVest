@@ -140,3 +140,9 @@ Após o servidor iniciar, você poderá acessar a documentação da API em: `htt
 5.  O frontend estará acessível em `http://localhost:[Porta]`. **(A porta padrão costuma ser 3000 ou 5173)**.
 
 **Lembrete:** O frontend só funcionará corretamente se a API (backend) estiver rodando em `http://localhost:8080`, pois ele dependerá dos endpoints de autenticação e dados para operar.
+
+
+## 📷 Video do sistema funcionando
+
+[![Assistir ao vídeo de apresentação]](https://youtu.be/PmoOnBKShxE?si=yvDUysQ-dEKr9Fv3)
+
