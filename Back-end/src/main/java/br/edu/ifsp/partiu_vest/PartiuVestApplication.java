@@ -15,20 +15,12 @@ public class PartiuVestApplication {
 
         SpringApplication.run(PartiuVestApplication.class, args);
 	}
-    @Bean
-    public CommandLineRunner runRandomGenerationTest(QuestionBookService service){
-        return args -> {
-            System.out.println("Iniciando teste de Geração Aleatória");
-            //service.createRandomExam();
-            System.out.println("Teste de Geração Aleatória concluído.");
-        };
-    }
-
+    //Rodar ambos os beans abaixo apenas para primeira vez que rodar o sistema, retirar em inicializações posteriores
     @Bean
     public CommandLineRunner runImport(JsonlProcessorService service){
         return args -> {
+
             System.out.println("Iniciando testes de importação");
-            // mudar para 2022, 2023 e 2024 para subir os 3 anos separadamente no bd.
             String path22 = "provas/2022.jsonl";
             String path23 = "provas/2023.jsonl";
             String path24 = "provas/2024.jsonl";
@@ -44,7 +36,12 @@ public class PartiuVestApplication {
     @Bean
     public CommandLineRunner createAdminUser(UserService service){
         return args -> {
-            service.createAdminUser();
+            try{
+                service.createAdminUser();
+
+            }catch (Exception ex){
+                System.out.println("Erro, adimin já criado" + ex.getMessage());
+            }
         };
     }
 

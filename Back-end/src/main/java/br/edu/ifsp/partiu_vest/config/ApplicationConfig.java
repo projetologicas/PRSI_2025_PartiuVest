@@ -23,7 +23,6 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // Correção: Agora trata o Optional e lança exceção, conforme exigido pelo UserDetailsService
         return username -> userRepository.findByEmail(username);
     }
 
