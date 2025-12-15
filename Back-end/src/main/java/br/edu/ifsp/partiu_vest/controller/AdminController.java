@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 @Tag(name = "Administrador", description = "Gerenciamento de funções de cadastro do administrador do sistema")
@@ -92,5 +94,39 @@ public class AdminController {
     public ResponseEntity<?> createExamFromJson(@RequestBody ExamJsonDTO examData) {
         questionBookService.createExamFromJSON(examData);
         return ResponseEntity.ok("Simulado importado com sucesso!");
+    }
+
+    @GetMapping("/users")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.findAllUsers());
+    }
+
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/items/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+        shopService.deleteItem(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> updateUserAdmin(@PathVariable Long id, @RequestBody UserUpdateRequest dto) {
+        userService.updateUser(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/items/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> updateItem(@PathVariable Long id, @RequestBody ItemRequestDTO dto) {
+        shopService.updateItem(id, dto);
+        return ResponseEntity.ok().build();
     }
 }

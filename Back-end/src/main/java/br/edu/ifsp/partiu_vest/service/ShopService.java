@@ -27,6 +27,27 @@ public class ShopService {
     }
 
     @Transactional
+    public void deleteItem(Long id) {
+        if (!itemRepository.existsById(id)) {
+            throw new RuntimeException("Item não encontrado para exclusão.");
+        }
+        itemRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void updateItem(Long id, ItemRequestDTO dto) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado."));
+
+        if (dto.name() != null && !dto.name().isBlank()) item.setName(dto.name());
+        if (dto.price() > 0) item.setPrice(dto.price()); // Assume preço > 0
+        if (dto.type() != null) item.setType(dto.type());
+        if (dto.imageUrl() != null && !dto.imageUrl().isBlank()) item.setImage_url(dto.imageUrl());
+
+        itemRepository.save(item);
+    }
+
+    @Transactional
     public User buyItem(Long userId, Long itemId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -51,6 +72,7 @@ public class ShopService {
         } else if (item.getType() == ItemType.TITLE) {
             user.setCurrentTitle(item.getImage_url());
         } else if (item.getType() == ItemType.THEME) {
+            // Lógica de tema (opcionalmente auto-equipável ou não)
         }
 
         return userRepository.save(user);

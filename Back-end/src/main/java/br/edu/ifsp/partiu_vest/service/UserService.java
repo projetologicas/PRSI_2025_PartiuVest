@@ -19,10 +19,28 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+
     public UserService(UserRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
         this.encoder = encoder;
     }
+
+    public List<UserResponse> findAllUsers() {
+        return repository.findAll()
+                .stream()
+                .map(UserResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteUser(Long id) {
+        if (!repository.existsById(id)) {
+            throw new UserNotFoundException("Usuário não encontrado com ID: " + id);
+        }
+        repository.deleteById(id);
+    }
+
+    // ----------------------------------------
+
     public UserResponse register(RegisterRequest dto) {
         if (repository.existsByEmail(dto.getEmail())) {
             throw new EmailAlreadyUsedException("E-mail já está em uso.");
@@ -41,6 +59,7 @@ public class UserService {
         var saved = repository.save(user);
         return UserResponse.from(saved);
     }
+
     public UserResponse checkCredentials(AuthRequest dto) {
         String email = dto.getEmail().toLowerCase();
         User user = repository.findByEmail(email);
@@ -82,7 +101,7 @@ public class UserService {
         user.setXp(0);
         user.setStreak();
         var saved = repository.save(user);
-        repository.save(user);
+        repository.save(user); // Nota: Parece haver uma duplicação aqui no seu código original, mas mantive como estava.
     }
 
     public Page<UserPublicDataResponse> getXpRanking(int page, int size) {
