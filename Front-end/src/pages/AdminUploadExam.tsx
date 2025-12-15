@@ -1,112 +1,91 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 import { getTokenCookie } from "../services/Cookies";
 import HomeNavBarADM from "../components/HomeNavBarADM";
+import type { QuestionBook } from "../types/QuestionBook";
 
-export default function AdminUploadExam() {
+export default function AdminExams() {
+    const [exams, setExams] = useState<QuestionBook[]>([]);
     const [jsonText, setJsonText] = useState("");
-    const [status, setStatus] = useState<{msg: string, type: 'success' | 'error' | ''}>({msg: '', type: ''});
+    const [status, setStatus] = useState({msg: '', type: ''});
 
-    const handleSubmit = async () => {
+    const fetchExams = async () => {
         try {
-            setStatus({ msg: "Validando JSON...", type: '' });
-
-            // 1. Validação local do JSON
-            let parsed;
-            try {
-                parsed = JSON.parse(jsonText);
-            } catch (e) {
-                setStatus({ msg: "❌ JSON Inválido! Verifique vírgulas e aspas.", type: 'error' });
-                return;
-            }
-
-            // 2. Validação básica de estrutura
-            if(!parsed.title || !parsed.questions || !Array.isArray(parsed.questions)) {
-                setStatus({ msg: "❌ JSON incompleto. Precisa de 'title' e array 'questions'.", type: 'error' });
-                return;
-            }
-
-            setStatus({ msg: "Enviando para o servidor...", type: '' });
-
-            // 3. Envio para o Backend
-            await api.post("/admin/exams", parsed, {
-                headers: { Authorization: `Bearer ${getTokenCookie()}` }
-            });
-
-            setStatus({ msg: "✅ Simulado e Questões importados com sucesso!", type: 'success' });
-            setJsonText(""); // Limpa o campo
-
-        } catch (error: any) {
+            const res = await api.get("/question_book/", { headers: { Authorization: `Bearer ${getTokenCookie()}` } });
+            // Filtra para mostrar talvez apenas os oficiais (opcional) ou todos
+            setExams(res.data);
+        } catch (error) {
             console.error(error);
-            setStatus({ msg: "❌ Erro no servidor: " + (error.response?.data?.message || "Tente novamente."), type: 'error' });
         }
     };
 
-    const exampleJson = `{
-  "title": "FUVEST 2024",
-  "description": "Prova Oficial",
-  "questions": [
-    {
-      "statement": "Qual a cor do céu?",
-      "answer": "A",
-      "optionA": "Azul",
-      "optionB": "Verde",
-      "optionC": "Roxo",
-      "optionD": "Amarelo",
-      "optionE": "Preto",
-      "explanation": "Dispersão de Rayleigh"
+    useEffect(() => { fetchExams(); }, []);
+
+    const handleUpload = async () => {
+        try {
+            let parsed = JSON.parse(jsonText);
+            setStatus({ msg: "Enviando...", type: '' });
+            await api.post("/admin/exams", parsed, { headers: { Authorization: `Bearer ${getTokenCookie()}` } });
+            setStatus({ msg: "✅ Importado!", type: 'success' });
+            setJsonText("");
+            fetchExams();
+        } catch (error: any) {
+            setStatus({ msg: "❌ Erro: " + (error.response?.data?.message || "JSON Inválido"), type: 'error' });
+        }
+    };
+
+    const handleDelete = async (id: number) => {
+        if(!confirm("Tem certeza? Isso apagará todas as tentativas associadas.")) return;
+        try {
+            await api.delete(`/question_book/${id}`, { headers: { Authorization: `Bearer ${getTokenCookie()}` } });
+            fetchExams();
+        } catch (e) {
+            alert("Erro ao deletar.");
+        }
     }
-  ]
-}`;
 
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 p-6 flex flex-col items-center">
             <HomeNavBarADM />
 
-            <div className="w-full max-w-5xl bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-2xl mt-4">
-                <div className="flex justify-between items-end mb-4 border-b border-gray-700 pb-2">
-                    <h2 className="text-2xl font-bold text-purple-400">Importar Simulado (JSON)</h2>
-                    <button
-                        onClick={() => setJsonText(exampleJson)}
-                        className="text-xs text-gray-400 hover:text-white underline"
-                    >
-                        Carregar Exemplo
+            <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                {/* COLUNA ESQUERDA: UPLOAD */}
+                <div className="lg:col-span-1 bg-gray-800 p-6 rounded-xl border border-gray-700 h-fit">
+                    <h2 className="text-xl font-bold text-purple-400 mb-4">Importar JSON</h2>
+                    <textarea
+                        className="w-full h-64 bg-gray-900 border border-gray-600 rounded p-3 text-xs font-mono text-green-400 outline-none resize-none mb-4"
+                        placeholder='{ "title": "...", "questions": [...] }'
+                        value={jsonText}
+                        onChange={e => setJsonText(e.target.value)}
+                    />
+                    <button onClick={handleUpload} className="w-full bg-purple-600 hover:bg-purple-500 py-3 rounded font-bold text-white transition">
+                        IMPORTAR
                     </button>
+                    {status.msg && <p className={`mt-2 text-center font-bold ${status.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>{status.msg}</p>}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Área de Texto */}
-                    <div className="md:col-span-2">
-                         <textarea
-                             className="w-full h-96 bg-[#1a1b1e] border border-gray-600 rounded p-4 font-mono text-sm text-green-400 focus:ring-2 ring-purple-500 outline-none resize-none shadow-inner"
-                             placeholder='Cole seu JSON aqui...'
-                             value={jsonText}
-                             onChange={(e) => setJsonText(e.target.value)}
-                         />
-                    </div>
-
-                    {/* Instruções Lateral */}
-                    <div className="text-sm text-gray-400 bg-black/20 p-4 rounded h-fit">
-                        <p className="font-bold text-white mb-2">Instruções:</p>
-                        <ul className="list-disc pl-4 space-y-1">
-                            <li>O JSON deve ser um objeto único.</li>
-                            <li>O campo <code>questions</code> é uma lista.</li>
-                            <li>Campos obrigatórios: <code>statement</code>, <code>answer</code> (Letra), <code>optionA</code>...<code>optionE</code>.</li>
-                        </ul>
-
-                        <div className="mt-6 pt-4 border-t border-gray-700">
-                             <span className={`font-bold block text-lg mb-4 ${status.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-                                {status.msg}
-                            </span>
-
-                            <button
-                                onClick={handleSubmit}
-                                className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded transition shadow-lg hover:shadow-purple-500/20"
-                            >
-                                PROCESSAR JSON
+                {/* COLUNA DIREITA: LISTA */}
+                <div className="lg:col-span-2 space-y-4">
+                    <h2 className="text-xl font-bold text-white">Provas no Sistema</h2>
+                    {exams.map(exam => (
+                        <div key={exam.id} className="bg-gray-800 p-4 rounded-xl border border-gray-700 flex justify-between items-center hover:border-purple-500 transition">
+                            <div>
+                                <h3 className="font-bold text-lg">{exam.model}</h3>
+                                <div className="text-sm text-gray-400 flex gap-4">
+                                    <span>📅 {new Date(exam.creation_date).toLocaleDateString()}</span>
+                                    <span>📝 {exam.questions_id ? exam.questions_id.length : 0} Questões</span>
+                                    {exam.r_generated ?
+                                        <span className="text-yellow-500 text-xs border border-yellow-500 px-1 rounded">Gerado</span> :
+                                        <span className="text-purple-400 text-xs border border-purple-500 px-1 rounded">Oficial</span>
+                                    }
+                                </div>
+                            </div>
+                            <button onClick={() => handleDelete(exam.id)} className="bg-red-900/20 text-red-400 hover:bg-red-600 hover:text-white px-4 py-2 rounded font-bold text-sm transition">
+                                Excluir
                             </button>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>
