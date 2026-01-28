@@ -27,10 +27,10 @@ Abaixo estão os membros que tornaram o Partiu Vest possível:
 
 | Nome Completo | Função | Contato (Ex: LinkedIn) |
 | :--- | :--- | :--- |
-| **[Rauan Caracciolo]** | **Desenvolvedor Backend (Líder)** | [https://www.linkedin.com/in/rauan-caracciolo-9a01aa269//https://github.com/RauanCaracciolo] |
-| **[Guilherme Fragiacomo]** | Desenvolvedor Full Stack | [https://www.linkedin.com/in/guilherme-fragiacomo-9739a4271//https://github.com/guilhermefragiacomo] |
-| **[Deivid Brito]** | Desenvolvedor Full Stack | [https://www.linkedin.com/in/deividpbrito//https://github.com/deividbrito] |
-| **[Luiz Francisco Junior]** | Desenvolvedor Frontend e UI/UX | [https://www.linkedin.com/in/luiz-francisco-rodrigues-junior-a36711265//https://github.com/Luiz-frj] |
+| **[Rauan Caracciolo]** | **Desenvolvedor Backend (Líder)** | [https://www.linkedin.com/in/rauan-caracciolo-9a01aa269 https://github.com/RauanCaracciolo] |
+| **[Guilherme Fragiacomo]** | Desenvolvedor Full Stack | [https://www.linkedin.com/in/guilherme-fragiacomo-9739a4271 https://github.com/guilhermefragiacomo] |
+| **[Deivid Brito]** | Desenvolvedor Full Stack | [https://www.linkedin.com/in/deividpbrito https://github.com/deividbrito] |
+| **[Luiz Francisco Junior]** | Desenvolvedor Frontend e UI/UX | [https://www.linkedin.com/in/luiz-francisco-rodrigues-junior-a36711265 https://github.com/Luiz-frj] |
 ## 📖 Documentação da API (OpenAPI / Swagger UI)
 
 A documentação da API foi gerada automaticamente utilizando o **Springdoc OpenAPI** e o **Swagger UI**, garantindo que todos os endpoints estejam sempre atualizados com a última versão do código.
